@@ -1,0 +1,118 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { api, getErrorMessage } from './api-client';
+import { 
+  User,
+  UsersListResponse,
+  BanUserRequest,
+  EditRoleRequest,
+  EditStatusRequest,
+  CreateUserRequest,
+} from './types';
+
+// User Management API
+export const userApi = {
+  listUsers: async (params?: any) => {
+    console.log('Fetching users with params:', params);
+    const response = await api.get<UsersListResponse>('/admin/list-users', { params });
+    return { data: response.data.data, meta: response.data.meta };
+  },
+
+  getUser: async (params: { username?: string; email?: string; id?: string }) => {
+    const response = await api.post('/admin/get-user', params);
+    return response.data.userData;
+  },
+
+  banUser: async (data: BanUserRequest) => {
+    const response = await api.put('/admin/ban-user', data);
+    return response.data;
+  },
+
+  editRole: async (data: EditRoleRequest) => {
+    const response = await api.put('/admin/edit-role', data);
+    return response.data;
+  },
+
+  editStatus: async (data: EditStatusRequest) => {
+    const response = await api.put('/admin/edit-status', data);
+    console.log('dd',response);
+    return response.data;
+  },
+
+  createUser: async (data: CreateUserRequest) => {
+    const response = await api.post('/auth/register', data);
+    return response.data;
+  },
+};
+
+// User Management Hooks
+export const useUsers = (params?: any) => {
+  return useQuery({
+    queryKey: ['users', params],
+    queryFn: ({ queryKey }) => userApi.listUsers(params),
+  });
+};
+
+export const useUser = (params: { username?: string; email?: string; id?: string }) => {
+  return useQuery({
+    queryKey: ['user', params],
+    queryFn: ({ queryKey }) =>
+      userApi.getUser(queryKey[1] as { username?: string; email?: string; id?: string }),
+    enabled: Boolean(params && (params.username || params.email || params.id)),
+  });
+};
+
+export const useBanUser = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: userApi.banUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+    onError: (error) => {
+      console.error('Ban user error:', getErrorMessage(error));
+    },
+  });
+};
+
+export const useEditRole = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: userApi.editRole,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+    onError: (error) => {
+      console.error('Edit role error:', getErrorMessage(error));
+    },
+  });
+};
+
+export const useEditStatus = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: userApi.editStatus,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+    onError: (error) => {
+      console.error('Edit status error:', getErrorMessage(error));
+    },
+  });
+};
+
+export const useCreateUser = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: userApi.createUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+    onError: (error) => {
+      console.error('Create user error:', getErrorMessage(error));
+    },
+  });
+};
