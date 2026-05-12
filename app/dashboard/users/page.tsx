@@ -1,7 +1,7 @@
 'use client';
 
 
-import { useUsers, useBanUser, useEditRole, useEditStatus, useUser } from '@/lib/users';
+import { useUsers, useBanUser, useEditRole, useEditStatus, useUser } from '@/Modules/users/users';
 import { getErrorMessage } from '@/lib/api-client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ResourceSkeleton } from '@/components/resource-skeleton';

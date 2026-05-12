@@ -1,12 +1,12 @@
 import { useMutation } from '@tanstack/react-query';
-import { api, tokenManager, getErrorMessage } from './api-client';
+import { api, tokenManager, getErrorMessage } from '../../lib/api-client';
 import type { ApiResponse } from '@/types';
-import { STORAGE_KEYS } from './constants';
+import { STORAGE_KEYS } from '../../lib/constants';
 import { 
   LoginCredentials, 
   LoginResponse, 
   ResetPasswordRequest 
-} from './types';
+} from '../../lib/types';
 
 // Auth API Endpoints
 export const authApi = {

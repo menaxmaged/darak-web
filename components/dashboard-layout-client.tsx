@@ -5,7 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { DashboardSidebar } from '@/components/dashboard-sidebar';
 import { PageHeader } from '@/components/page-header';
 import { DashboardRole, getActiveDashboardNavItem } from '@/lib/config/dashboard-config';
-import { getStoredUserRole } from '@/lib/auth';
+import { getStoredUserRole } from '@/Modules/auth/auth';
 
 type DashboardLayoutClientProps = {
   children: React.ReactNode;

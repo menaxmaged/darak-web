@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api, getErrorMessage } from './api-client';
+import { api, getErrorMessage } from '../../lib/api-client';
 import { 
   User,
   UsersListResponse,
@@ -7,9 +7,9 @@ import {
   EditRoleRequest,
   EditStatusRequest,
   CreateUserRequest,
-} from './types';
+} from '../../lib/types';
 import { withMock } from '@/lib/mocks/mock-config';
-import { mockUsersList, mockUserDetail, mockUserSuccess } from '@/lib/mocks/users';
+import { mockUsersList, mockUserDetail, mockUserSuccess } from '@/Modules/users/mock';
 
 // User Management API
 export const userApi = {

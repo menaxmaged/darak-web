@@ -4,7 +4,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { LogOut, Menu, X } from 'lucide-react';
-import { authApi, getStoredUserRole } from '@/lib/auth';
+import { authApi, getStoredUserRole } from '@/Modules/auth/auth';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';

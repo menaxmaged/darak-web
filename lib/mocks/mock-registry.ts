@@ -12,8 +12,8 @@ import { mockPositionsList, mockPositionDetail, mockPositionSuccess } from '@/Mo
 import { mockVolunteeringList, mockVolunteeringSuccess } from '@/Modules/volunteering/mock';
 import { mockNewsletterList } from '@/Modules/newsletter/mock';
 import { mockContactsList, mockContactsSuccess } from '@/Modules/contacts/mock';
-import { mockUsersList, mockUserDetail, mockUserSuccess } from '@/lib/mocks/users';
-import { mockReelsList, mockReelSuccess } from '@/lib/mocks/reels';
+import { mockUsersList, mockUserDetail, mockUserSuccess } from '@/Modules/users/mock';
+import { mockReelsList, mockReelSuccess } from '@/Modules/reels/mocks';
 
 export type MockRequest = {
   method: string;

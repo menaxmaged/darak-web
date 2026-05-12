@@ -12,7 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useReels } from '@/lib/reels';
+import { useReels } from '@/Modules/reels/reels';
 import { formatDate } from '@/lib/status-helpers';
 import { Reel } from '@/lib/eyoot-types';
 

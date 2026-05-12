@@ -1,6 +1,6 @@
 'use client';
 
-import { useCreateUser } from '@/lib/users';
+import { useCreateUser } from '@/Modules/users/users';
 import { getErrorMessage } from '@/lib/api-client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';

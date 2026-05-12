@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useResetPassword } from '@/lib/auth';
+import { useResetPassword } from '@/Modules/auth/auth';
 import { getErrorMessage } from '@/lib/api-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

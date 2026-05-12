@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api, getErrorMessage } from './api-client';
-import { Reel } from './eyoot-types';
+import { api, getErrorMessage } from '../../lib/api-client';
+import { Reel } from '../../lib/eyoot-types';
 import { withMock } from '@/lib/mocks/mock-config';
-import { mockReelsList, mockReelSuccess } from '@/lib/mocks/reels';
+import { mockReelsList, mockReelSuccess } from '@/Modules/reels/mocks';
 
 export const reelApi = {
   list: async (params?: Record<string, unknown>) => {
