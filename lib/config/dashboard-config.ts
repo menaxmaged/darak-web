@@ -43,6 +43,8 @@ export const DASHBOARD_NAV_ICONS = {
   Home: LayoutDashboard,
 } as const;
 
+export type NavIconName = keyof typeof DASHBOARD_NAV_ICONS;
+
 export const DASHBOARD_CONFIG = {
   brand: {
     name: 'Eyoot Dashboard',

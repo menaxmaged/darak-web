@@ -49,7 +49,7 @@ function SidebarContent({
       <nav className="flex-1 p-6 space-y-2">
         {visibleRoutes.map((route) => {
           const active = isRouteActive(route, pathname, searchParams);
-          const Icon = DASHBOARD_NAV_ICONS[route.icon as keyof typeof DASHBOARD_NAV_ICONS];
+          const Icon = DASHBOARD_NAV_ICONS[route.icon];
 
           return (
             <Link

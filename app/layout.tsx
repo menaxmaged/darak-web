@@ -30,6 +30,7 @@ export default function RootLayout({
         className={`${montserrat.variable} antialiased`}
       >
         <Providers>
+          
           {children}
           <ToastProvider />
         </Providers>

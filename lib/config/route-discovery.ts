@@ -1,4 +1,5 @@
 // Client-safe: no Node.js imports. Used by both server and client code.
+import type { NavIconName } from './dashboard-config';
 
 export interface RoutePageMeta {
   title: string;
@@ -8,7 +9,7 @@ export interface RoutePageMeta {
 
 export interface RouteConfig {
   label: string;
-  icon: string;
+  icon: NavIconName;
   roles: string[];
   sidebar?: boolean;
   order?: number;
