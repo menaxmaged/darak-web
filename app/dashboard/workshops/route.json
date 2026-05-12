@@ -1,0 +1,15 @@
+{
+  "label": "Workshops",
+  "icon": "BookOpen",
+  "roles": ["admin"],
+  "sidebar": true,
+  "order": 6,
+  "page": {
+    "title": "Workshops",
+    "description": "Manage workshops and track registrations",
+    "action": {
+      "label": "Add Workshop",
+      "href": "/dashboard/workshops/new"
+    }
+  }
+}

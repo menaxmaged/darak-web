@@ -1,0 +1,11 @@
+{
+  "label": "Analytics",
+  "icon": "BarChart3",
+  "roles": ["admin"],
+  "sidebar": true,
+  "order": 12,
+  "page": {
+    "title": "Reports & Analytics",
+    "description": "Platform-wide analytics and export tools"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "label": "Companies",
+  "icon": "Building2",
+  "roles": ["admin"],
+  "sidebar": true,
+  "order": 3,
+  "page": {
+    "title": "Companies",
+    "description": "Manage partner companies and their requirements",
+    "action": {
+      "label": "Add Company",
+      "href": "/dashboard/companies/new"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "label": "Settings",
+  "icon": "Settings",
+  "roles": ["admin"],
+  "sidebar": true,
+  "order": 14,
+  "page": {
+    "title": "Settings",
+    "description": "Platform configuration and rules"
+  }
+}

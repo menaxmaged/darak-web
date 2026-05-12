@@ -1,0 +1,11 @@
+{
+  "label": "Students",
+  "icon": "GraduationCap",
+  "roles": ["admin"],
+  "sidebar": true,
+  "order": 1,
+  "page": {
+    "title": "Student Management",
+    "description": "Manage all students and their internship applications"
+  }
+}

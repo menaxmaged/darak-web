@@ -1,0 +1,11 @@
+{
+  "label": "Applications",
+  "icon": "FileText",
+  "roles": ["admin"],
+  "sidebar": true,
+  "order": 2,
+  "page": {
+    "title": "Applications",
+    "description": "Review and manage all internship applications"
+  }
+}

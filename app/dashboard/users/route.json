@@ -1,0 +1,11 @@
+{
+  "label": "Users",
+  "icon": "Users",
+  "roles": ["admin"],
+  "sidebar": true,
+  "order": 17,
+  "page": {
+    "title": "Users",
+    "description": "Manage platform user accounts"
+  }
+}

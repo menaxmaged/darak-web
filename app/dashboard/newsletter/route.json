@@ -1,0 +1,11 @@
+{
+  "label": "Newsletter",
+  "icon": "MailOpen",
+  "roles": ["admin"],
+  "sidebar": true,
+  "order": 16,
+  "page": {
+    "title": "Newsletter",
+    "description": "Manage newsletter subscribers"
+  }
+}

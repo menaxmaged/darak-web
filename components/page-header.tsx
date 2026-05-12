@@ -4,18 +4,19 @@ import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { getActiveDashboardNavItem } from '@/lib/config/dashboard-config';
+import { useDashboardRoutes } from '@/lib/providers/dashboard-routes-provider';
+import { getActiveRoute } from '@/lib/config/route-discovery';
 
 export function PageHeader({ className }: { className?: string }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const activeItem = getActiveDashboardNavItem(pathname, searchParams);
+  const routes = useDashboardRoutes();
 
-  if (!activeItem?.page) {
-    return null;
-  }
+  const activeRoute = getActiveRoute(routes, pathname, searchParams);
 
-  const { title, description, action } = activeItem.page;
+  if (!activeRoute?.page) return null;
+
+  const { title, description, action } = activeRoute.page;
 
   return (
     <div className={cn('flex flex-col gap-4 md:flex-row md:items-center md:justify-between', className)}>

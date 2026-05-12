@@ -1,0 +1,11 @@
+{
+  "label": "Certificates",
+  "icon": "Award",
+  "roles": ["admin"],
+  "sidebar": true,
+  "order": 10,
+  "page": {
+    "title": "Certificates",
+    "description": "Manage and upload internship completion certificates"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "label": "Dashboard",
+  "icon": "LayoutDashboard",
+  "roles": ["admin", "user"],
+  "sidebar": true,
+  "order": 0,
+  "page": {
+    "title": "Dashboard Overview",
+    "description": "Operational overview of the Eyoot platform"
+  }
+}

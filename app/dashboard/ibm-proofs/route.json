@@ -1,0 +1,11 @@
+{
+  "label": "IBM Proof Reviews",
+  "icon": "BadgeCheck",
+  "roles": ["admin"],
+  "sidebar": true,
+  "order": 5,
+  "page": {
+    "title": "IBM Proof Reviews",
+    "description": "Review uploaded IBM course completion proofs"
+  }
+}
