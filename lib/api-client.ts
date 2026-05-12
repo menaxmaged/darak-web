@@ -1,25 +1,17 @@
+/**
+ * Global API Client - Base configuration
+ * Used by all features
+ */
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-// API Base Configuration
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://via-api.codexeg.net';
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY || 'c9faa4c8-b9b8-49b6-a706-831ebf82fdcd';
-// API Response Types
-export interface ApiResponse<T = any> {
-  [x: string]: any;
-  status: boolean;
-  data?: T;
-  meta?: any;
-  message_en?: string;
-  message_ar?: string;
-  token?: string;
-  pagination?: {
-    total: number;
-    page: number;
-    limit: number;
-  };
-}
+import type { ApiResponse } from '@/types';
 
-// Token Management
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
+
+console.log('API Base URL:', API_BASE_URL);
+console.log('API Key:', API_KEY); 
 const TOKEN_KEY = 'token';
 
 export const tokenManager = {
@@ -43,18 +35,15 @@ export const tokenManager = {
   },
 };
 
-// Create Axios Instance
 const createApiClient = (): AxiosInstance => {
   const client = axios.create({
     baseURL: API_BASE_URL,
-
     headers: {
       'Content-Type': 'application/json',
       'api-key': API_KEY || '',
     }
   });
 
-  // Request Interceptor - Add JWT Token
   client.interceptors.request.use(
     (config) => {
       const token = tokenManager.get();
@@ -66,15 +55,19 @@ const createApiClient = (): AxiosInstance => {
     (error) => Promise.reject(error)
   );
 
-  // Response Interceptor - Handle Errors
   client.interceptors.response.use(
     (response) => response,
     (error) => {
       if (error.response?.status === 401) {
         tokenManager.remove();
         if (typeof window !== 'undefined') {
+// Check if we are already on the login page
+        const isLoginPage = window.location.pathname === '/login';
+      // Only redirect/refresh if we are NOT on the login page
+        if (!isLoginPage) {
           window.location.href = '/login';
         }
+              }
       }
       return Promise.reject(error);
     }
@@ -85,7 +78,6 @@ const createApiClient = (): AxiosInstance => {
 
 export const apiClient = createApiClient();
 
-// Helper for JSON Requests
 export const api = {
   get: <T = any>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<ApiResponse<T>>> => {
     console.log('GET Request to:', url, 'with config:', config);    
@@ -106,13 +98,13 @@ export const api = {
     console.log('DELETE Request to:', url, 'with config:', config);
     return apiClient.delete(url, config);
   },
+  
   patch: <T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<ApiResponse<T>>> => {
     console.log('PATCH Request to:', url, 'with data:', data);
     return apiClient.patch(url, data, config);
   }
 };
 
-// Helper for FormData Requests (for image uploads)
 export const apiFormData = {
   post: <T = any>(url: string, formData: FormData, config?: AxiosRequestConfig): Promise<AxiosResponse<ApiResponse<T>>> =>
     apiClient.post(url, formData, {
@@ -133,7 +125,6 @@ export const apiFormData = {
     }),
 };
 
-// Extract error message from API response
 export const getErrorMessage = (error: any): string => {
   if (error.response?.data?.message_en) {
     return error.response.data.message_en;

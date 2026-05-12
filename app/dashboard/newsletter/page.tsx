@@ -1,6 +1,6 @@
 'use client';
 
-import { useNewsletterSubscribers } from '@/lib/newsletter';
+import { useNewsletterSubscribers } from '@/Modules/newsletter/newsletter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ResourceSkeleton } from '@/components/resource-skeleton';
 import {

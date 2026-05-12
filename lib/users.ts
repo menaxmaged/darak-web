@@ -18,8 +18,8 @@ export const userApi = {
   },
 
   getUser: async (params: { username?: string; email?: string; id?: string }) => {
-    const response = await api.post('/admin/get-user', params);
-    return response.data.userData;
+    const response = await api.post<User>('/admin/get-user', params);
+    return response.data.data ?? (response.data as { userData?: User }).userData;
   },
 
   banUser: async (data: BanUserRequest) => {

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { api } from './api-client';
-import { NewsletterListResponse } from './types';
+import { api } from '../../lib/api-client';
+import { NewsletterListResponse } from '../../lib/types';
 
 // Newsletter API
 export const newsletterApi = {

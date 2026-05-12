@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
-import { Providers } from "@/components/providers";
+import { Providers } from "@/lib/providers/query-provider";
 import { ToastProvider } from "@/components/toast-provider";
 import "./globals.css";
 

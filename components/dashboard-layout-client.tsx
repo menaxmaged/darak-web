@@ -31,7 +31,7 @@ export default function DashboardLayoutClient({ children }: DashboardLayoutClien
 
     if (!role) {
       setIsAuthorized(false);
-      router.replace('/login');
+    //  router.replace('/login');
       return;
     }
 

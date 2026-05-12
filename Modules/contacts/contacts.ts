@@ -1,6 +1,6 @@
-import { getErrorMessage } from './api-client';
-import { ContactInquiry, UpdateContactStatusRequest } from './types';
-import { useResource } from './hooks/useResource';
+import { getErrorMessage } from '../../lib/api-client';
+import { ContactInquiry, UpdateContactStatusRequest } from '../../lib/types';
+import { useResource } from '../../lib/hooks/useResource';
 
 const useContactsResource = () =>
   useResource<ContactInquiry>('contacts', {

@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { api, tokenManager, getErrorMessage } from './api-client';
+import type { ApiResponse } from '@/types';
 import { STORAGE_KEYS } from './constants';
 import { 
   LoginCredentials, 
@@ -9,16 +10,17 @@ import {
 
 // Auth API Endpoints
 export const authApi = {
-    login: async (credentials: LoginCredentials) => {
+    login: async (credentials: LoginCredentials): Promise<ApiResponse<LoginResponse>> => {
         console.log('Logging in with credentials:', credentials);
         const response = await api.post<LoginResponse>('/auth/login', credentials);
-        if (response.data?.token) {
-            tokenManager.set(response.data.token);
-    }
-    if (response.data?.user?.role) {
-      authStorage.setRole(response.data.user.role);
+        const payload = response.data?.data;
+        if (payload?.token) {
+          tokenManager.set(payload.token);
+        }
+        if (payload?.user?.role) {
+          authStorage.setRole(payload.user.role);
         } else if (response.status === 403) {
-                console.error('Login failed: Invalid credentials');
+          console.error('Login failed: Invalid credentials');
         }
 
         return response.data;
