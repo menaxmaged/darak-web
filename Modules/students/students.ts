@@ -1,26 +1,36 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, getErrorMessage } from '../../lib/api-client';
 import { Student, StudentDetail, PaginatedResponse } from '../../lib/eyoot-types';
+import { withMock } from '@/lib/mocks/mock-config';
+import { mockStudentsList, mockStudentDetail, mockStudentSuccess } from './mock';
 
 export const studentApi = {
   list: async (params?: Record<string, unknown>) => {
-    const response = await api.get<PaginatedResponse<Student>>('/admin/students', { params });
-    return { data: response.data.data ?? [], meta: response.data.meta, pagination: response.data.pagination };
+    return withMock(async () => {
+      const response = await api.get<Student[]>('/admin/students', { params });
+      return { data: response.data.data ?? [], meta: response.data.meta, pagination: response.data.pagination };
+    }, mockStudentsList);
   },
 
   getById: async (id: number) => {
-    const response = await api.get<StudentDetail>(`/admin/students/${id}`);
-    return (response.data.data ?? response.data) as StudentDetail;
+    return withMock(async () => {
+      const response = await api.get<StudentDetail>(`/admin/students/${id}`);
+      return (response.data.data ?? response.data) as StudentDetail;
+    }, mockStudentDetail);
   },
 
   update: async ({ id, data }: { id: number; data: Partial<Student> }) => {
-    const response = await api.put(`/admin/students/${id}`, data);
-    return response.data;
+    return withMock(async () => {
+      const response = await api.put(`/admin/students/${id}`, data);
+      return response.data;
+    }, mockStudentSuccess);
   },
 
   ban: async ({ id, isBanned }: { id: number; isBanned: boolean }) => {
-    const response = await api.put(`/admin/students/${id}/ban`, { isBanned });
-    return response.data;
+    return withMock(async () => {
+      const response = await api.put(`/admin/students/${id}/ban`, { isBanned });
+      return response.data;
+    }, mockStudentSuccess);
   },
 };
 

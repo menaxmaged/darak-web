@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { crudProvider, CrudListResult } from '@/lib/core/crud-provider';
+import { isMockEnabled } from '@/lib/mocks/mock-config';
 
 export type ResourceId = string | number;
 
@@ -30,6 +31,8 @@ export type UseResourceOptions<TList, TDetail = TList> = {
   detailTransform?: DetailTransform<TDetail>;
   detailUsesIdPath?: boolean;
   updateUsesIdPath?: boolean;
+  mockListResult?: CrudListResult<TList>;
+  mockDetailResult?: TDetail;
 };
 
 export type UpdateVariables<TData> = {
@@ -58,20 +61,38 @@ export function useResource<TList, TDetail = TList>(
   options: UseResourceOptions<TList, TDetail>
 ) {
   const queryClient = useQueryClient();
-  const { endpoints, methods, listTransform, detailTransform, detailUsesIdPath, updateUsesIdPath } = options;
+  const {
+    endpoints,
+    methods,
+    listTransform,
+    detailTransform,
+    detailUsesIdPath,
+    updateUsesIdPath,
+    mockListResult,
+    mockDetailResult,
+  } = options;
 
   const invalidateResource = () =>
     queryClient.invalidateQueries({ queryKey: [resourceName] });
 
-  const useList = (params?: Record<string, unknown>) => {
+  const useList = (
+    params?: Record<string, unknown>,
+    queryOptions?: { enabled?: boolean; queryKey?: unknown[] }
+  ) => {
+    const queryKey = queryOptions?.queryKey ?? [resourceName, 'list', params];
     return useQuery({
-      queryKey: [resourceName, 'list', params],
-      queryFn: () =>
-        crudProvider.getAll<TList>(endpoints.list, {
+      queryKey,
+      queryFn: () => {
+        if (isMockEnabled() && mockListResult) {
+          return Promise.resolve(mockListResult);
+        }
+        return crudProvider.getAll<TList>(endpoints.list, {
           params,
           method: methods?.list,
           transform: listTransform,
-        }),
+        });
+      },
+      enabled: queryOptions?.enabled ?? true,
     });
   };
 
@@ -88,13 +109,17 @@ export function useResource<TList, TDetail = TList>(
     const requestId = usesPath ? id : undefined;
     return useQuery({
       queryKey: [resourceName, 'detail', id],
-      queryFn: () =>
-        crudProvider.getById<TDetail>(endpoints.detail as string, requestId as ResourceId, {
+      queryFn: () => {
+        if (isMockEnabled() && mockDetailResult) {
+          return Promise.resolve(mockDetailResult);
+        }
+        return crudProvider.getById<TDetail>(endpoints.detail as string, requestId as ResourceId, {
           method: methods?.detail,
           params,
           data: requestData,
           transform: detailTransform,
-        }),
+        });
+      },
       enabled: id !== undefined && id !== null,
     });
   };

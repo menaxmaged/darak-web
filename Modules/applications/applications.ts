@@ -4,7 +4,7 @@ import { Application, ApplicationDetail, ApplicationStatus, PaginatedResponse } 
 
 export const applicationApi = {
   list: async (params?: Record<string, unknown>) => {
-    const response = await api.get<PaginatedResponse<Application>>('/admin/applications', { params });
+    const response = await api.get<Application[]>('/admin/applications', { params });
     return { data: response.data.data ?? [], meta: response.data.meta, pagination: response.data.pagination };
   },
 

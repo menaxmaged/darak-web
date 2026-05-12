@@ -1,6 +1,9 @@
 import { getErrorMessage } from '../../lib/api-client';
 import { ContactInquiry, UpdateContactStatusRequest } from '../../lib/types';
 import { useResource } from '../../lib/hooks/useResource';
+import { isMockEnabled } from '@/lib/mocks/mock-config';
+import { mockContactsList, mockContactsSuccess } from './mock';
+import { useMutation } from '@tanstack/react-query';
 
 const useContactsResource = () =>
   useResource<ContactInquiry>('contacts', {
@@ -8,6 +11,7 @@ const useContactsResource = () =>
       list: '/contact/list',
       update: '/contact/update',
     },
+    mockListResult: mockContactsList,
     updateUsesIdPath: false,
   });
 
@@ -19,16 +23,24 @@ export const useContacts = () => {
 
 export const useUpdateContactStatus = () => {
   const resource = useContactsResource();
+  const mockEnabled = isMockEnabled();
   const mutation = resource.useUpdate({
     onError: (error) => {
       console.error('Update contact status error:', getErrorMessage(error));
     },
   });
+  const mockMutation = useMutation({
+    mutationFn: async ({ data }: { data: UpdateContactStatusRequest }) => {
+      void data;
+      return mockContactsSuccess;
+    },
+  });
+  const activeMutation = mockEnabled ? mockMutation : mutation;
   return {
-    ...mutation,
+    ...activeMutation,
     mutate: (data: UpdateContactStatusRequest, options?: Parameters<typeof mutation.mutate>[1]) =>
-      mutation.mutate({ data }, options),
+      activeMutation.mutate({ data }, options),
     mutateAsync: (data: UpdateContactStatusRequest, options?: Parameters<typeof mutation.mutateAsync>[1]) =>
-      mutation.mutateAsync({ data }, options),
+      activeMutation.mutateAsync({ data }, options),
   };
 };

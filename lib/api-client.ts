@@ -6,6 +6,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import type { ApiResponse } from '@/types';
+import { getMockResponse } from '@/lib/mocks/mock-registry';
+import { isMockEnabled, shouldForceMock, isFallbackMock } from '@/lib/mocks/mock-config';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
@@ -78,51 +80,103 @@ const createApiClient = (): AxiosInstance => {
 
 export const apiClient = createApiClient();
 
+const buildMockResponse = <T>(
+  url: string,
+  data: ApiResponse<T>,
+  config?: AxiosRequestConfig
+): AxiosResponse<ApiResponse<T>> => ({
+  data,
+  status: 200,
+  statusText: 'OK',
+  headers: {},
+  config: { ...(config ?? {}), url },
+});
+
+const handleMockRequest = async <T>(
+  method: string,
+  url: string,
+  config: AxiosRequestConfig | undefined,
+  data: unknown,
+  request: () => Promise<AxiosResponse<ApiResponse<T>>>
+): Promise<AxiosResponse<ApiResponse<T>>> => {
+  const mock = isMockEnabled() ? getMockResponse({
+    method,
+    url,
+    params: config?.params as Record<string, unknown> | undefined,
+    data,
+  }) : null;
+
+  if (shouldForceMock() && mock) {
+    return buildMockResponse(url, mock as ApiResponse<T>, config);
+  }
+
+  if (!shouldForceMock() && isFallbackMock()) {
+    try {
+      return await request();
+    } catch (error) {
+      if (mock) {
+        return buildMockResponse(url, mock as ApiResponse<T>, config);
+      }
+      throw error;
+    }
+  }
+
+  if (mock) {
+    return buildMockResponse(url, mock as ApiResponse<T>, config);
+  }
+
+  return request();
+};
+
 export const api = {
   get: <T = any>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<ApiResponse<T>>> => {
-    console.log('GET Request to:', url, 'with config:', config);    
-    return apiClient.get(url, config);
+    console.log('GET Request to:', url, 'with config:', config);
+    return handleMockRequest('GET', url, config, undefined, () => apiClient.get(url, config));
   },
-  
+
   post: <T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<ApiResponse<T>>> => {
     console.log('POST Request to:', url, 'with data:', data);
-    return apiClient.post(url, data, config);
+    return handleMockRequest('POST', url, config, data, () => apiClient.post(url, data, config));
   },
-  
+
   put: <T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<ApiResponse<T>>> => {
     console.log('PUT Request to:', url, 'with data:', data);
-    return apiClient.put(url, data, config);
+    return handleMockRequest('PUT', url, config, data, () => apiClient.put(url, data, config));
   },
-  
+
   delete: <T = any>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<ApiResponse<T>>> => {
     console.log('DELETE Request to:', url, 'with config:', config);
-    return apiClient.delete(url, config);
+    return handleMockRequest('DELETE', url, config, undefined, () => apiClient.delete(url, config));
   },
-  
+
   patch: <T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<ApiResponse<T>>> => {
     console.log('PATCH Request to:', url, 'with data:', data);
-    return apiClient.patch(url, data, config);
-  }
+    return handleMockRequest('PATCH', url, config, data, () => apiClient.patch(url, data, config));
+  },
 };
 
 export const apiFormData = {
   post: <T = any>(url: string, formData: FormData, config?: AxiosRequestConfig): Promise<AxiosResponse<ApiResponse<T>>> =>
-    apiClient.post(url, formData, {
-      ...config,
-      headers: {
-        ...config?.headers,
-        'Content-Type': 'multipart/form-data',
-      },
-    }),
-  
+    handleMockRequest('POST', url, config, formData, () =>
+      apiClient.post(url, formData, {
+        ...config,
+        headers: {
+          ...config?.headers,
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+    ),
+
   put: <T = any>(url: string, formData: FormData, config?: AxiosRequestConfig): Promise<AxiosResponse<ApiResponse<T>>> =>
-    apiClient.put(url, formData, {
-      ...config,
-      headers: {
-        ...config?.headers,
-        'Content-Type': 'multipart/form-data',
-      },
-    }),
+    handleMockRequest('PUT', url, config, formData, () =>
+      apiClient.put(url, formData, {
+        ...config,
+        headers: {
+          ...config?.headers,
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+    ),
 };
 
 export const getErrorMessage = (error: any): string => {
