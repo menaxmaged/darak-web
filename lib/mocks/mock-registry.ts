@@ -38,8 +38,10 @@ const wrapData = (data: unknown): ApiResponse<unknown> => ({
 const wrapList = (list: { data: unknown[]; meta?: unknown; pagination?: unknown }): ApiResponse<unknown> => ({
   success: true,
   data: list.data,
-  meta: list.meta,
-  pagination: list.pagination,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  meta: list.meta as any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  pagination: list.pagination as any,
 });
 
 const routes: MockRoute[] = [
