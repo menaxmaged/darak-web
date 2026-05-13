@@ -86,6 +86,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const isAdmin = hasRole('admin');
+  const isAdvertiser = hasRole('advertiser');
   const value = {
     user,
     isAuthenticated: !!user,
@@ -95,6 +97,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     updateUser,
     refreshUser,
     hasRole,
+    isAdmin,
+    isAdvertiser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

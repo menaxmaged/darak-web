@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "app/dashboard/page.tsx.bak", "components/ui/avatar.tsx.bak", "components/ui/aspect-ratio.tsx.bak", "components/ui/drawer.tsx.bak", "components/ui/command.tsx.bak", "components/ui/resizable.tsx.bak"  ],
   "exclude": ["node_modules"]
 }

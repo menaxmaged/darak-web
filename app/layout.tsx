@@ -3,6 +3,8 @@ import { Montserrat } from "next/font/google";
 import { Providers } from "@/lib/providers/query-provider";
 import { ToastProvider } from "@/components/toast-provider";
 import "./globals.css";
+import { Header } from "@/components/Layout/Header";
+import { Footer } from "@/components/Layout/Footer";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -12,8 +14,8 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "eyoot Dashboard",
-  description: "eyoot admin dashboard",
+  title: "Darak Dashboard",
+  description: "Darak is Egypt's premier real estate marketplace for buying properties. Explore our dashboard to manage your listings, view analytics, and connect with potential buyers.",
 };
 
 export default function RootLayout({
@@ -30,8 +32,13 @@ export default function RootLayout({
         className={`${montserrat.variable} antialiased`}
       >
         <Providers>
-          
-          {children}
+            <div className="min-h-screen flex flex-col">
+      <Header />
+
+      <main className="flex-1">{children}</main>
+      <Footer />
+    </div>
+  
           <ToastProvider />
         </Providers>
       </body>

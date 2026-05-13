@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Disable stylelint rule for unknown at-rules (Tailwind-specific directives like
+  @apply, @layer, @theme, @custom-variant are intentional) */
+/* stylelint-disable at-rule-no-unknown */
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -136,5 +140,193 @@
   h5,
   h6 {
     @apply font-sans font-bold text-branding-dark;
+  }
+}
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+
+@layer components {
+  .container-custom {
+    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .card-listing {
+    @apply bg-card rounded-xl overflow-hidden transition-all duration-300;
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-listing:hover {
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
+  }
+
+  .chip {
+    @apply inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200;
+  }
+
+  .chip-primary {
+    @apply bg-primary text-primary-foreground hover:opacity-90;
+  }
+
+  .chip-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-muted;
+  }
+
+  .chip-outline {
+    @apply border border-border bg-transparent hover:bg-secondary;
+  }
+
+  .chip-ready {
+    @apply bg-emerald-100 text-emerald-700;
+  }
+
+  .chip-offplan {
+    @apply bg-blue-100 text-blue-700;
+  }
+
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background: var(--gradient-primary);
+  }
+
+  .btn-cta {
+    background: var(--gradient-primary);
+    @apply text-primary-foreground font-semibold px-6 py-3 rounded-xl transition-all duration-200 hover:opacity-90 hover:shadow-lg;
+  }
+
+  .input-search {
+    @apply bg-background border-2 border-border rounded-xl px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200;
+  }
+
+  .filter-pill {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-background text-sm font-medium cursor-pointer transition-all duration-200;
+  }
+
+  .filter-pill:hover {
+    @apply border-foreground/30 bg-secondary;
+  }
+
+  .filter-pill.active {
+    @apply border-primary bg-primary/10 text-primary;
+  }
+
+  .status-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .status-pending {
+    @apply bg-amber-100 text-amber-700;
+  }
+
+  .status-approved {
+    @apply bg-emerald-100 text-emerald-700;
+  }
+
+  .status-rejected {
+    @apply bg-red-100 text-red-700;
+  }
+}
+
+@layer utilities {
+  .animate-in {
+    animation: animateIn 0.3s ease-out forwards;
+  }
+
+  @keyframes animateIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.4s ease-out forwards;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }

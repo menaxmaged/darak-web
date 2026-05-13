@@ -1,0 +1,62 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getErrorMessage } from '../../lib/api-client';
+import { listingApi } from './api';
+import type { ListingsFilters } from './types';
+
+export const useListings = (filters: ListingsFilters = {}) =>
+  useQuery({ queryKey: ['listings', filters], queryFn: () => listingApi.list(filters) });
+
+export const useListing = (id: string | undefined) =>
+  useQuery({
+    queryKey: ['listing', id],
+    queryFn: () => listingApi.get(id!),
+    enabled: !!id,
+  });
+
+export const useCreateListing = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: listingApi.create,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['listings'] }),
+    onError: (e) => console.error(getErrorMessage(e)),
+  });
+};
+
+export const useUpdateListing = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: listingApi.update,
+    onSuccess: (_, variables) => {
+      qc.invalidateQueries({ queryKey: ['listings'] });
+      qc.invalidateQueries({ queryKey: ['listing', variables.id] });
+    },
+    onError: (e) => console.error(getErrorMessage(e)),
+  });
+};
+
+export const useDeleteListing = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: listingApi.delete,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['listings'] }),
+    onError: (e) => console.error(getErrorMessage(e)),
+  });
+};
+
+export const useApproveListing = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: listingApi.approve,
+    onSuccess: (_, variables) => {
+      qc.invalidateQueries({ queryKey: ['listings'] });
+      qc.invalidateQueries({ queryKey: ['listing', variables.id] });
+    },
+    onError: (e) => console.error(getErrorMessage(e)),
+  });
+};
+
+export const useUploadListingImages = () =>
+  useMutation({
+    mutationFn: listingApi.uploadImages,
+    onError: (e) => console.error(getErrorMessage(e)),
+  });
