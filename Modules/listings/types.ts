@@ -57,5 +57,6 @@ export interface ListingsFilters {
   advertiserId?: string;
   isFeatured?: boolean;
   sortBy?: 'newest' | 'price_low' | 'price_high' | 'delivery';
+  page?: number;
   limit?: number;
 }

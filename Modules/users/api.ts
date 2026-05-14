@@ -13,10 +13,8 @@ import { mockUsersList, mockUserDetail, mockUserSuccess } from '@/Modules/users/
 export const userApi = {
   listUsers: async (params?: any) => {
     console.log('Fetching users with params:', params);
-    return withMock(async () => {
       const response = await api.get<UsersListResponse>('/admin/list-users', { params });
       return { data: response.data.data, meta: response.data.meta };
-    }, mockUsersList);
   },
 
   getUser: async (params: { username?: string; email?: string; id?: string }) => {

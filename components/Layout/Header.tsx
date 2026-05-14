@@ -63,18 +63,11 @@ const router = useRouter();
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                  {user.role === 'user' && (
                     <DropdownMenuItem onClick={() => router.push("/dashboard")}>
                       <LayoutDashboard className="mr-2 h-4 w-4" />
                       Dashboard
                     </DropdownMenuItem>
-                  )}
-                  {user.role === 'admin' && (
-                    <DropdownMenuItem onClick={() => router.push("/admin")}>
-                      <LayoutDashboard className="mr-2 h-4 w-4" />
-                      Admin Panel
-                    </DropdownMenuItem>
-                  )}
+             
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut}>
                     <LogOut className="mr-2 h-4 w-4" />
@@ -84,7 +77,7 @@ const router = useRouter();
               </DropdownMenu>
             ) : (
               <>
-                <Link href="/auth">
+                <Link href="/login">
                   <Button variant="ghost">Sign in</Button>
                 </Link>
                 <Link href="/auth?mode=signup">

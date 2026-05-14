@@ -1,0 +1,11 @@
+{
+  "label": "Listings",
+  "icon": "FileText",
+  "roles": ["admin"],
+  "sidebar": true,
+  "order": 1,
+  "page": {
+    "title": "Listings Management",
+    "description": "Review, approve, and reject property listings"
+  }
+}

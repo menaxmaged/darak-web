@@ -36,13 +36,12 @@ function SidebarContent({
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="px-8 p-4 border-b border-border">
-        <Image
-          src={DASHBOARD_CONFIG.brand.logo}
-          alt={`${DASHBOARD_CONFIG.brand.name} Logo`}
-          width={100}
-          height={100}
-          className="w-24 h-auto"
-        />
+           <Link href="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-lg">D</span>
+            </div>
+            <span className="font-display font-bold text-xl">Darak</span>
+          </Link>
       </div>
 
       {/* Navigation */}

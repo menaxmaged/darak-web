@@ -1,26 +1,27 @@
-import { api, tokenManager } from '../../lib/api-client';
-import type { ApiResponse } from '@/types';
+import { apiClient, tokenManager } from '../../lib/api-client';
 import { STORAGE_KEYS } from '../../lib/constants';
-import { LoginCredentials, LoginResponse, ResetPasswordRequest } from '../../lib/types';
+import type { LoginCredentials, LoginResponse, ResetPasswordRequest } from './types';
 
 export const authApi = {
-  login: async (credentials: LoginCredentials): Promise<ApiResponse<LoginResponse>> => {
-    console.log('Logging in with credentials:', credentials);
-    const response = await api.post<LoginResponse>('/auth/login', credentials);
-    const payload = response.data?.data;
+  login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
+    const response = await apiClient.post<LoginResponse>('/auth/login', credentials);
+    const payload = response.data;
     if (payload?.token) {
       tokenManager.set(payload.token);
     }
     if (payload?.user?.role) {
       authStorage.setRole(payload.user.role);
-    } else if (response.status === 403) {
-      console.error('Login failed: Invalid credentials');
     }
+    return payload;
+  },
+
+  register: async (data: { email: string; password: string; name: string }) => {
+    const response = await apiClient.post('/auth/register', data);
     return response.data;
   },
 
   resetPassword: async (data: ResetPasswordRequest) => {
-    const response = await api.post('/auth/reset-password', data);
+    const response = await apiClient.post('/auth/reset-password', data);
     return response.data;
   },
 

@@ -1,0 +1,12 @@
+{
+  "label": "My Listings",
+  "icon": "Building2",
+  "roles": ["advertiser", "user"],
+  "sidebar": true,
+  "order": 2,
+  "page": {
+    "title": "My Listings",
+    "description": "Manage your property listings",
+    "action": { "label": "Add Listing", "href": "/dashboard/my-listings?new=true" }
+  }
+}

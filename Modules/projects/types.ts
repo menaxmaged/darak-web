@@ -13,4 +13,6 @@ export type ProjectUpdate = Partial<ProjectInsert>;
 
 export interface ProjectsFilters {
   city?: string;
+  page?: number;
+  limit?: number;
 }

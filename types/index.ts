@@ -50,7 +50,7 @@ export interface User {
   phone: string;
   dateOfBirth: string;
   gender: 'male' | 'female';
-  role: 'admin' | 'seller' | 'sales';
+  role: 'admin' | 'user';
   status: 'active' | 'inactive';
   isBanned: boolean;
   createdAt: string;

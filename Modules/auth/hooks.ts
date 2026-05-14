@@ -2,6 +2,15 @@ import { useMutation } from '@tanstack/react-query';
 import { getErrorMessage } from '../../lib/api-client';
 import { authApi } from './api';
 
+export const useRegister = () => {
+  return useMutation({
+    mutationFn: authApi.register,
+    onError: (error) => {
+      console.error('Register error:', getErrorMessage(error));
+    },
+  });
+};
+
 export const useLogin = () => {
   return useMutation({
     mutationFn: authApi.login,

@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { tokenManager } from '@/lib/api-client';
-import type { LoginResponse } from '@/lib/types';
+import type { LoginResponse } from '@/Modules/auth/types';
 
 interface AuthContextType {
   user: LoginResponse['user'] | null;

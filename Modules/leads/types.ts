@@ -14,4 +14,6 @@ export interface LeadsFilters {
   listingId?: string;
   advertiserId?: string;
   contactType?: ContactType;
+  page?: number;
+  limit?: number;
 }

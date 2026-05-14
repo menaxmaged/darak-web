@@ -1,23 +1,3 @@
-// Authentication Types
-export interface LoginCredentials {
-  email: string;
-  password: string;
-}
-
-export interface LoginResponse {
-  user: {
-    id: number;
-    name: string;
-    email: string;
-    role: string;
-  };
-  token: string;
-}
-
-export interface ResetPasswordRequest {
-  email: string;
-}
-
 // User Management Types
 export interface User {
   id: number;

@@ -23,6 +23,7 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const routes = useDashboardRoutes();
+  console.log('ProtectedRoute: isAuthenticated=', isAuthenticated, 'isLoading=', isLoading, 'user=', user);
 
   const activeRoute = getActiveRoute(routes, pathname, searchParams);
   const effectiveRoles = allowedRoles ?? activeRoute?.roles;

@@ -11,4 +11,6 @@ export type AreaUpdate = Partial<AreaInsert>;
 
 export interface AreasFilters {
   city?: string;
+  page?: number;
+  limit?: number;
 }
