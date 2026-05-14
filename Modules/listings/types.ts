@@ -1,48 +1,64 @@
-export type ListingStatus = 'pending' | 'approved' | 'rejected';
+export type ListingStatus = 'draft' | 'pending' | 'approved' | 'rejected' | 'inactive';
 export type PropertyStatus = 'ready' | 'offplan';
 
 export interface Listing {
-  id: string;
+  id: number;
   property_status: PropertyStatus;
   property_type: string;
   city: string;
-  area: string;
-  project_name?: string;
-  title?: string;
-  description?: string;
+  area_id: number | null;
+  project_id: number | null;
+  advertiser_id: number;
+  title: string | null;
+  description: string | null;
   price: number;
   built_up_area: number;
   bedrooms: number;
   bathrooms: number;
+  finishing: string | null;
+  delivery_year: number | null;
+  down_payment_percentage: number | null;
+  installment_years: number | null;
+  is_featured: boolean;
+  listing_status: ListingStatus;
+  images: string[];
+  admin_comment: string | null;
+  is_cash_only: boolean;
+  created_at: string;
+  updated_at: string;
+  Advertiser: { id: number; firstName: string; lastName: string; email: string; phone: string };
+  Area: { id: number; name: string; city: string } | null;
+  Project: { id: number; name: string; developer: string; city: string } | null;
+}
+
+export type ListingInsert = {
+  property_status: string;
+  property_type: string;
+  city: string;
+  price: number;
+  built_up_area: number;
+  bedrooms: number;
+  bathrooms: number;
+  area_id?: number | null;
+  project_id?: number | null;
+  title?: string;
+  description?: string;
   finishing?: string;
   delivery_year?: number;
   down_payment_percentage?: number;
   installment_years?: number;
-  advertiser_id: string;
-  advertiser_name?: string;
-  is_featured: boolean;
-  listing_status: ListingStatus;
-  images?: string[];
-  approved_at?: string;
-  rejected_at?: string;
-  admin_comment?: string;
   is_cash_only?: boolean;
-  created_at: string;
-  updated_at?: string;
-}
+  images?: string[];
+};
 
-export type ListingInsert = Omit<
-  Listing,
-  'id' | 'created_at' | 'updated_at' | 'approved_at' | 'rejected_at' | 'listing_status'
->;
-export type ListingUpdate = Partial<Listing>;
+export type ListingUpdate = Partial<ListingInsert>;
 
 export interface ListingsFilters {
   propertyStatus?: PropertyStatus;
   propertyType?: string;
   city?: string;
-  area?: string;
-  project?: string;
+  areaId?: number;
+  projectId?: number;
   minPrice?: number;
   maxPrice?: number;
   minArea?: number;
@@ -50,7 +66,7 @@ export interface ListingsFilters {
   bedrooms?: number;
   bathrooms?: number;
   finishing?: string;
-  deliveryYear?: string;
+  deliveryYear?: number;
   minDownPayment?: number;
   maxDownPayment?: number;
   listingStatus?: ListingStatus;

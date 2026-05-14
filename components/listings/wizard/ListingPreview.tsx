@@ -9,8 +9,8 @@ interface ListingPreviewProps {
     property_type: string;
     property_status: string;
     city: string;
-    area: string;
-    project_name: string;
+    area_id: string;
+    project_id: string;
     price: string;
     is_cash_only: boolean;
     down_payment_percentage: string;
@@ -29,9 +29,15 @@ interface ListingPreviewProps {
     contact_phone: string;
     contact_whatsapp: string;
   };
+  previewImages?: string[];
+  areaName?: string;
+  projectName?: string;
 }
 
-export function ListingPreview({ data }: ListingPreviewProps) {
+export function ListingPreview({ data, previewImages, areaName, projectName }: ListingPreviewProps) {
+  const allImages = (previewImages ?? data.images).map(img => 
+    img.startsWith('http://') || img.startsWith('https://') ? img : `${process.env.NEXT_PUBLIC_API_URL}${img}`
+  );
   const price = Number(data.price) || 0;
   const downPaymentPercent = Number(data.down_payment_percentage) || 0;
   const downPaymentAmount = Math.round((price * downPaymentPercent) / 100);
@@ -56,8 +62,8 @@ export function ListingPreview({ data }: ListingPreviewProps) {
       <div className="bg-card border border-border rounded-xl overflow-hidden">
         {/* Image Gallery Preview */}
         <div className="relative aspect-video bg-secondary">
-          {data.images.length > 0 ? (
-            <img src={data.images[0]} alt={data.title} className="w-full h-full object-cover" />
+          {allImages.length > 0 ? (
+            <img src={allImages[0]} alt={data.title} className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-muted-foreground">
               No images uploaded
@@ -68,9 +74,9 @@ export function ListingPreview({ data }: ListingPreviewProps) {
               {data.property_status === "ready" ? "Ready to Move" : "Off-Plan"}
             </Badge>
           </div>
-          {data.images.length > 1 && (
+          {allImages.length > 1 && (
             <div className="absolute bottom-4 right-4 px-2 py-1 bg-black/60 text-white text-sm rounded">
-              +{data.images.length - 1} photos
+              +{allImages.length - 1} photos
             </div>
           )}
         </div>
@@ -81,7 +87,7 @@ export function ListingPreview({ data }: ListingPreviewProps) {
           <h3 className="font-display text-2xl font-bold mb-2">{data.title || "Untitled Listing"}</h3>
           <div className="flex items-center gap-2 text-muted-foreground mb-4">
             <MapPin className="h-4 w-4" />
-            <span>{[data.project_name, data.area, data.city].filter(Boolean).join(", ") || "Location not specified"}</span>
+            <span>{[projectName, areaName, data.city].filter(Boolean).join(", ") || "Location not specified"}</span>
           </div>
 
           {/* Price */}

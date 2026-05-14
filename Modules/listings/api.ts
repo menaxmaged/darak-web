@@ -7,6 +7,9 @@ export const listingApi = {
   list: async (filters: ListingsFilters = {}) => {
     return withMock(async () => {
       const response = await api.get<Listing[]>('/admin/listings', { params: filters });
+      console.log('API response for listings list:', response.data);
+      console.log('API response meta:', response.data.meta);
+      console.log('API response data:', response.data.data);
       return { data: response.data.data ?? [], meta: response.data.meta };
     }, mockListingsList);
   },
@@ -18,9 +21,30 @@ export const listingApi = {
     }, mockListingItem);
   },
 
-  create: async (data: ListingInsert) => {
+  create: async ({ data, files }: { data: ListingInsert; files: File[] }) => {
     return withMock(async () => {
-      const response = await api.post('/admin/listings', data);
+      const form = new FormData();
+      const append = (key: string, value: string | number | boolean | undefined | null) => {
+        if (value !== undefined && value !== null) form.append(key, String(value));
+      };
+      append('property_status', data.property_status);
+      append('property_type', data.property_type);
+      append('city', data.city);
+      append('price', data.price);
+      append('built_up_area', data.built_up_area);
+      append('bedrooms', data.bedrooms);
+      append('bathrooms', data.bathrooms);
+      append('area_id', data.area_id);
+      append('project_id', data.project_id);
+      append('title', data.title);
+      append('description', data.description);
+      append('finishing', data.finishing);
+      append('delivery_year', data.delivery_year);
+      append('down_payment_percentage', data.down_payment_percentage);
+      append('installment_years', data.installment_years);
+      if (data.is_cash_only !== undefined) form.append('is_cash_only', String(data.is_cash_only));
+      files.forEach((f) => form.append('images', f));
+      const response = await apiFormData.postAuto('/admin/listings', form);
       return response.data;
     }, mockListingSuccess);
   },
@@ -39,7 +63,7 @@ export const listingApi = {
     }, mockListingSuccess);
   },
 
-  approve: async ({ id, approved, comment }: { id: string; approved: boolean; comment?: string }) => {
+  approve: async ({ id, approved, comment }: { id: number; approved: boolean; comment?: string }) => {
     return withMock(async () => {
       const response = await api.put(`/admin/listings/${id}/approve`, { approved, comment });
       return response.data;

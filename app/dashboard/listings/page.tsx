@@ -59,7 +59,7 @@ function ReviewDialog({
               />
               <div className="min-w-0">
                 <h3 className="font-display font-bold text-lg line-clamp-2">{listing.title}</h3>
-                <p className="text-muted-foreground text-sm">{listing.area}, {listing.city}</p>
+                <p className="text-muted-foreground text-sm">{listing.Area?.name}, {listing.city}</p>
                 <p className="font-bold text-primary mt-2">{formatPriceEGP(Number(listing.price))}</p>
                 <Link
                   href={`/property/${listing.id}`}

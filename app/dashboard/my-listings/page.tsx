@@ -2,7 +2,7 @@
 
 import { Suspense, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Plus, Building2, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Plus, Building2, Clock, CheckCircle, XCircle, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ListingCard } from '@/components/listings/ListingCard';
@@ -41,12 +41,19 @@ function StatCard({
   );
 }
 
-// ─── Listing card with status badge ────────────────────────────────────────────
+// ─── Listing card with status badge + edit button ──────────────────────────────
 
-function MyListingCard({ listing }: { listing: Listing }) {
+function MyListingCard({ listing, onEdit }: { listing: Listing; onEdit: (l: Listing) => void }) {
   return (
     <div className="relative">
-      <div className="absolute top-3 right-3 z-10">
+      <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
+        <button
+          onClick={(e) => { e.preventDefault(); onEdit(listing); }}
+          className="p-1.5 rounded-full bg-background/80 backdrop-blur-sm border border-border hover:bg-secondary transition-colors"
+          title="Edit listing"
+        >
+          <Pencil className="h-3.5 w-3.5" />
+        </button>
         <span className={`status-badge ${
           listing.listing_status === 'pending' ? 'status-pending' :
           listing.listing_status === 'approved' ? 'status-approved' :
@@ -72,6 +79,7 @@ function MyListingsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [showWizard, setShowWizard] = useState(searchParams.get('new') === 'true');
+  const [editingListing, setEditingListing] = useState<Listing | undefined>(undefined);
 
   const { data: listingsRes, isLoading } = useListings({
     advertiserId: user?.id ? String(user.id) : undefined,
@@ -84,17 +92,24 @@ function MyListingsContent() {
 
   const openWizard = () => {
     router.replace('/dashboard/my-listings?new=true');
+    setEditingListing(undefined);
+    setShowWizard(true);
+  };
+
+  const openEdit = (listing: Listing) => {
+    setEditingListing(listing);
     setShowWizard(true);
   };
 
   const closeWizard = () => {
     router.replace('/dashboard/my-listings');
+    setEditingListing(undefined);
     setShowWizard(false);
   };
 
   return (
     <>
-      {showWizard && <ListingWizard onClose={closeWizard} />}
+      {showWizard && <ListingWizard onClose={closeWizard} listing={editingListing} />}
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -117,13 +132,13 @@ function MyListingsContent() {
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="aspect-[4/5] rounded-xl" />
+            <Skeleton key={i} className="aspect-4/5 rounded-xl" />
           ))}
         </div>
       ) : listings.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {listings.map((listing) => (
-            <MyListingCard key={listing.id} listing={listing} />
+            <MyListingCard key={listing.id} listing={listing} onEdit={openEdit} />
           ))}
         </div>
       ) : (

@@ -98,6 +98,12 @@ export const apiFormData = {
       ...config,
       headers: { ...config?.headers, 'Content-Type': 'multipart/form-data' },
     }),
+
+  // Let the browser set Content-Type + boundary automatically (required for create listing)
+  postAuto: <T = any>(url: string, formData: FormData): Promise<AxiosResponse<ApiResponse<T>>> =>
+    apiClient.post<ApiResponse<T>>(url, formData, {
+      headers: { 'Content-Type': undefined },
+    }),
 };
 
 export const getErrorMessage = (error: any): string => {

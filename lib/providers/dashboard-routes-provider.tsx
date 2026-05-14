@@ -14,11 +14,11 @@ export function DashboardRoutesProvider({
   children: React.ReactNode;
 }) {
   return (
-    <ProtectedRoute>
     <DashboardRoutesContext.Provider value={routes}>
-      {children}
+      <ProtectedRoute>
+        {children}
+      </ProtectedRoute>
     </DashboardRoutesContext.Provider>
-    </ProtectedRoute>
   );
 }
 

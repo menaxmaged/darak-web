@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { WizardProgress } from "./WizardProgress";
 import { Step1BasicInfo } from "./Step1BasicInfo";
@@ -6,11 +6,13 @@ import { Step2Payment } from "./Step2Payment";
 import { Step3Details } from "./Step3Details";
 import { Step4Media } from "./Step4Media";
 import { ListingPreview } from "./ListingPreview";
-import { useCreateListing } from "@/Modules/listings/hooks";
-import { useAuth } from "@/lib/providers/auth-provider";
+import { useCreateListing, useUpdateListing, useUploadListingImages } from "@/Modules/listings/hooks";
+import { useAreas } from "@/Modules/areas/areas";
+import { useProjects } from "@/Modules/projects/hooks";
 import { toast } from "sonner";
 import { ArrowLeft, ArrowRight, Send } from "lucide-react";
 import { calculateInstallment } from "@/lib/constants";
+import type { Listing } from "@/Modules/listings/types";
 
 const STEPS = [
   { title: "Basic Info", description: "Property type & location" },
@@ -19,15 +21,15 @@ const STEPS = [
   { title: "Media", description: "Photos & contact" },
 ];
 
-interface WizardData {
+export interface WizardData {
   // Step 1
   title: string;
   description: string;
   property_type: string;
   property_status: string;
   city: string;
-  area: string;
-  project_name: string;
+  area_id: string;
+  project_id: string;
   address: string;
   // Step 2
   price: string;
@@ -45,7 +47,8 @@ interface WizardData {
   delivery_year: string;
   view: string;
   // Step 4
-  images: string[];
+  imageFiles: File[];   // raw files — sent via FormData on create, uploaded on edit
+  images: string[];     // existing URL strings from backend (edit mode)
   video_url: string;
   tour_url: string;
   contact_name: string;
@@ -53,14 +56,14 @@ interface WizardData {
   contact_whatsapp: string;
 }
 
-const initialData: WizardData = {
+const emptyData: WizardData = {
   title: "",
   description: "",
   property_type: "",
   property_status: "",
   city: "",
-  area: "",
-  project_name: "",
+  area_id: "",
+  project_id: "",
   address: "",
   price: "",
   is_cash_only: false,
@@ -75,6 +78,7 @@ const initialData: WizardData = {
   finishing: "",
   delivery_year: "",
   view: "",
+  imageFiles: [],
   images: [],
   video_url: "",
   tour_url: "",
@@ -83,26 +87,72 @@ const initialData: WizardData = {
   contact_whatsapp: "",
 };
 
-interface ListingWizardProps {
-  onClose: () => void;
+function listingToWizardData(listing: Listing): WizardData {
+  return {
+    title: listing.title ?? "",
+    description: listing.description ?? "",
+    property_type: listing.property_type,
+    property_status: listing.property_status,
+    city: listing.city,
+    area_id: listing.area_id != null ? String(listing.area_id) : "",
+    project_id: listing.project_id != null ? String(listing.project_id) : "",
+    address: "",
+    price: String(listing.price),
+    is_cash_only: listing.is_cash_only,
+    down_payment_percentage: listing.down_payment_percentage != null ? String(listing.down_payment_percentage) : "",
+    installment_years: listing.installment_years != null ? String(listing.installment_years) : "",
+    installment_frequency: "",
+    built_up_area: String(listing.built_up_area),
+    land_area: "",
+    bedrooms: String(listing.bedrooms),
+    bathrooms: String(listing.bathrooms),
+    floor: "",
+    finishing: listing.finishing ?? "",
+    delivery_year: listing.delivery_year != null ? String(listing.delivery_year) : "",
+    view: "",
+    imageFiles: [],
+    images: listing.images ?? [],
+    video_url: "",
+    tour_url: "",
+    contact_name: "",
+    contact_phone: "",
+    contact_whatsapp: "",
+  };
 }
 
-export function ListingWizard({ onClose }: ListingWizardProps) {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [data, setData] = useState<WizardData>(initialData);
-  const [showPreview, setShowPreview] = useState(false);
-  const { user } = useAuth();
-  const createListing = useCreateListing();
-  
+interface ListingWizardProps {
+  onClose: () => void;
+  listing?: Listing;
+}
 
-  const updateData = (field: string, value: string | boolean | string[]) => {
+export function ListingWizard({ onClose, listing }: ListingWizardProps) {
+  const isEdit = !!listing;
+  const [currentStep, setCurrentStep] = useState(1);
+  const [data, setData] = useState<WizardData>(isEdit ? listingToWizardData(listing) : emptyData);
+  const [showPreview, setShowPreview] = useState(false);
+  const createListing = useCreateListing();
+  const updateListing = useUpdateListing();
+  const uploadImages = useUploadListingImages();
+
+  const { data: areasRes } = useAreas({ city: data.city });
+  const areas = areasRes?.data ?? [];
+  const { data: projectsRes } = useProjects({ city: data.city });
+  const projects = projectsRes?.data ?? [];
+
+  // Combine existing URLs + local object URLs for preview display
+  const previewImages = useMemo(() => [
+    ...data.images,
+    ...data.imageFiles.map((f) => URL.createObjectURL(f)),
+  ], [data.images, data.imageFiles]);
+
+  const updateData = (field: string, value: string | boolean | string[] | File[]) => {
     setData(prev => ({ ...prev, [field]: value }));
   };
 
   const validateStep = (step: number): boolean => {
     switch (step) {
       case 1:
-        if (!data.title || !data.property_type || !data.property_status || !data.city || !data.area) {
+        if (!data.property_type || !data.property_status || !data.city || !data.area_id) {
           toast.error("Please fill in all required fields");
           return false;
         }
@@ -155,66 +205,71 @@ export function ListingWizard({ onClose }: ListingWizardProps) {
   };
 
   const handleSubmit = async () => {
-    if (!user) {
-      toast.error("You must be logged in to create a listing");
-      return;
-    }
-
     const price = Number(data.price);
     const downPaymentPercent = Number(data.down_payment_percentage) || 0;
     const years = Number(data.installment_years) || 0;
     const frequency = data.installment_frequency;
 
-    const listingData = {
-      advertiser_id: String(user.id),
-      title: data.title,
-        description: data.description || undefined,
-      is_featured: false,
-      property_type: data.property_type as any,
-      property_status: data.property_status as any,
+    const areaId = data.area_id && data.area_id !== "none" ? Number(data.area_id) : null;
+    const projectId = data.project_id && data.project_id !== "none" ? Number(data.project_id) : null;
+
+    const baseBody = {
+      property_type: data.property_type,
+      property_status: data.property_status,
       city: data.city,
-      area: data.area,
-        project_name: data.project_name || undefined,
-        address: data.address || undefined,
-      price: price,
-      is_cash_only: data.is_cash_only,
-      down_payment_percentage: data.is_cash_only ? undefined : downPaymentPercent,
-      down_payment_amount: data.is_cash_only ? undefined : Math.round((price * downPaymentPercent) / 100),
-        installment_years: data.is_cash_only ? undefined : years,
-        installment_frequency: data.is_cash_only ? undefined : (frequency as any),
-        installment_amount: data.is_cash_only ? undefined : calculateInstallment(price, downPaymentPercent, years, frequency),
+      price,
       built_up_area: Number(data.built_up_area),
-      land_area: data.land_area ? Number(data.land_area) : undefined,
       bedrooms: Number(data.bedrooms),
       bathrooms: Number(data.bathrooms),
-      floor: data.floor ? (data.floor as any) : undefined,
-      finishing: data.finishing as any,
-      delivery_year: data.property_status === "offplan" && data.delivery_year ? Number(data.delivery_year.replace("+", "")) : undefined,
-      view: data.view ? (data.view as any) : undefined,
-      images: data.images,
-        video_url: data.video_url || undefined,
-        tour_url: data.tour_url || undefined,
-      contact_name: data.contact_name,
-      contact_phone: data.contact_phone,
-      contact_whatsapp: data.contact_whatsapp,
+      area_id: areaId,
+      project_id: projectId,
+      title: data.title || undefined,
+      description: data.description || undefined,
+      finishing: data.finishing || undefined,
+      delivery_year: data.property_status === "offplan" && data.delivery_year
+        ? Number(data.delivery_year.replace("+", ""))
+        : undefined,
+      is_cash_only: data.is_cash_only,
+      down_payment_percentage: data.is_cash_only ? undefined : downPaymentPercent || undefined,
+      installment_years: data.is_cash_only ? undefined : years || undefined,
+      installment_amount: data.is_cash_only ? undefined : calculateInstallment(price, downPaymentPercent, years, frequency),
     };
 
     try {
-      await createListing.mutateAsync(listingData);
-      toast.success("Listing submitted for approval!");
+      if (isEdit) {
+        // Upload any newly added files first, then include all image URLs
+        let allImages = [...data.images];
+        if (data.imageFiles.length > 0) {
+          const uploaded = await uploadImages.mutateAsync(data.imageFiles);
+          allImages = [...allImages, ...uploaded];
+        }
+        await updateListing.mutateAsync({
+          id: String(listing.id),
+          data: { ...baseBody, images: allImages.length > 0 ? allImages : undefined },
+        });
+        toast.success("Listing updated successfully!");
+      } else {
+        // Create: send all fields + files in one multipart request
+        await createListing.mutateAsync({ data: baseBody, files: data.imageFiles });
+        toast.success("Listing submitted for approval!");
+      }
       onClose();
     } catch (error) {
-      console.error("Failed to create listing:", error);
-      toast.error("Failed to create listing. Please try again.");
+      console.error("Failed to save listing:", error);
+      toast.error(`Failed to ${isEdit ? "update" : "create"} listing. Please try again.`);
     }
   };
+
+  const isPending = createListing.isPending || updateListing.isPending || uploadImages.isPending;
 
   return (
     <div className="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 overflow-y-auto">
       <div className="container-custom py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <h1 className="font-display text-2xl font-bold">Create New Listing</h1>
+          <h1 className="font-display text-2xl font-bold">
+            {isEdit ? "Edit Listing" : "Create New Listing"}
+          </h1>
           <Button variant="ghost" onClick={onClose}>Cancel</Button>
         </div>
 
@@ -227,13 +282,18 @@ export function ListingWizard({ onClose }: ListingWizardProps) {
         <div className="max-w-3xl mx-auto mt-16">
           <div className="bg-card border border-border rounded-xl p-6 md:p-8">
             {showPreview ? (
-              <ListingPreview data={data} />
+              <ListingPreview
+                data={data}
+                previewImages={previewImages}
+                areaName={areas.find(a => String(a.id) === data.area_id)?.name}
+                projectName={projects.find(p => String(p.id) === data.project_id)?.name}
+              />
             ) : (
               <>
                 {currentStep === 1 && <Step1BasicInfo data={data} onChange={updateData} />}
                 {currentStep === 2 && <Step2Payment data={data} onChange={updateData} />}
                 {currentStep === 3 && <Step3Details data={data} onChange={updateData} />}
-                {currentStep === 4 && <Step4Media data={data} onChange={updateData} />}
+                {currentStep === 4 && <Step4Media data={data} isEdit={isEdit} onChange={updateData} />}
               </>
             )}
 
@@ -243,15 +303,17 @@ export function ListingWizard({ onClose }: ListingWizardProps) {
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 {showPreview ? "Edit" : currentStep === 1 ? "Cancel" : "Back"}
               </Button>
-              
+
               {showPreview ? (
-                <Button 
-                  className="gradient-primary" 
+                <Button
+                  className="gradient-primary"
                   onClick={handleSubmit}
-                  disabled={createListing.isPending}
+                  disabled={isPending}
                 >
                   <Send className="h-4 w-4 mr-2" />
-                  {createListing.isPending ? "Submitting..." : "Submit for Approval"}
+                  {isPending
+                    ? isEdit ? "Saving..." : "Submitting..."
+                    : isEdit ? "Save Changes" : "Submit for Approval"}
                 </Button>
               ) : (
                 <Button className="gradient-primary" onClick={handleNext}>

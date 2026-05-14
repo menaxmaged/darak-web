@@ -32,7 +32,11 @@ function label(val: string | undefined) {
 function ImageGallery({ images }: { images: string[] }) {
   const [active, setActive] = useState(0);
   const fallback = 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80';
-  const imgs = images.length ? images : [fallback];
+  const imgs = (images.length ? images : [fallback]).map((img) =>
+    img.startsWith('http://') || img.startsWith('https://')
+      ? img
+      : `${process.env.NEXT_PUBLIC_API_URL}${img}`
+  );
 
   const prev = () => setActive((i) => (i - 1 + imgs.length) % imgs.length);
   const next = () => setActive((i) => (i + 1) % imgs.length);
@@ -165,7 +169,7 @@ function PropertyDetail({ listing }: { listing: Listing }) {
             <div className="flex items-center gap-1.5 text-muted-foreground">
               <MapPin className="w-4 h-4 shrink-0" />
               <span>
-                {[listing.project_name, listing.area, listing.city].filter(Boolean).join(', ')}
+                {[listing.Project?.name, listing.Area?.name, listing.city].filter(Boolean).join(', ')}
               </span>
             </div>
           </div>
@@ -264,7 +268,7 @@ function PropertyDetail({ listing }: { listing: Listing }) {
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Building2 className="w-4 h-4 shrink-0" />
-                  <span>{listing.city}{listing.area ? `, ${listing.area}` : ''}</span>
+                  <span>{listing.city}{listing.Area?.name ? `, ${listing.Area.name}` : ''}</span>
                 </div>
               </div>
             </div>

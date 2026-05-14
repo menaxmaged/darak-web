@@ -8,14 +8,17 @@ interface ListingCardProps {
 }
 
 export function ListingCard({ listing }: ListingCardProps) {
-  const mainImage = listing.images?.[0] || "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80";
-
+  const imageUrl = listing.images?.[0] || "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80";
+  const mainImage = imageUrl?.startsWith("http://") || imageUrl?.startsWith("https://") 
+    ? imageUrl 
+    : `${process.env.NEXT_PUBLIC_API_URL}${imageUrl}`;
+ 
   return (
     <Link href={`/property/${listing.id}`} className="card-listing group block">
       <div className="relative aspect-[4/3] overflow-hidden">
         <img
           src={mainImage}
-          alt={listing.title}
+          alt={listing.title ?? ""}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <div className="absolute top-3 left-3 flex gap-2">
@@ -35,7 +38,7 @@ export function ListingCard({ listing }: ListingCardProps) {
         
         <div className="flex items-center gap-1 text-muted-foreground text-sm mb-3">
           <MapPin className="h-4 w-4" />
-          <span className="line-clamp-1">{listing.area}, {listing.city}</span>
+          <span className="line-clamp-1">{listing.Area?.name ?? listing.city}</span>
         </div>
         
         <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">

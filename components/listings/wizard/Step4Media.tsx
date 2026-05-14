@@ -1,11 +1,12 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Upload, X } from "lucide-react";
-import { toast } from "sonner";
 import { useUploadListingImages } from "@/Modules/listings/hooks";
+import { toast } from "sonner";
 
 interface Step4Props {
   data: {
+    imageFiles: File[];
     images: string[];
     video_url: string;
     tour_url: string;
@@ -13,28 +14,42 @@ interface Step4Props {
     contact_phone: string;
     contact_whatsapp: string;
   };
-  onChange: (field: string, value: string | string[]) => void;
+  isEdit?: boolean;
+  onChange: (field: string, value: string | string[] | File[]) => void;
 }
 
-export function Step4Media({ data, onChange }: Step4Props) {
+export function Step4Media({ data, isEdit = false, onChange }: Step4Props) {
   const uploadImages = useUploadListingImages();
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
+    const selected = Array.from(files);
 
-    try {
-      const urls = await uploadImages.mutateAsync(Array.from(files));
-      onChange("images", [...data.images, ...urls]);
-      toast.success(`${files.length} image(s) uploaded successfully`);
-    } catch {
-      toast.error("Failed to upload images");
+    if (isEdit) {
+      try {
+        const urls = await uploadImages.mutateAsync(selected);
+        onChange("images", [...data.images, ...urls]);
+        toast.success(`${selected.length} image(s) uploaded`);
+      } catch {
+        toast.error("Failed to upload images");
+      }
+    } else {
+      onChange("imageFiles", [...data.imageFiles, ...selected]);
     }
+    e.target.value = "";
   };
 
-  const removeImage = (index: number) => {
+  const removeNewFile = (index: number) => {
+    onChange("imageFiles", data.imageFiles.filter((_, i) => i !== index));
+  };
+
+  const removeExistingUrl = (index: number) => {
     onChange("images", data.images.filter((_, i) => i !== index));
   };
+
+  const isUploading = uploadImages.isPending;
+  const totalCount = data.images.length + data.imageFiles.length;
 
   return (
     <div className="space-y-6">
@@ -51,35 +66,35 @@ export function Step4Media({ data, onChange }: Step4Props) {
             type="file"
             accept="image/*"
             multiple
-            onChange={handleImageUpload}
+            onChange={handleFileSelect}
             className="hidden"
             id="image-upload"
-            disabled={uploadImages.isPending}
+            disabled={isUploading}
           />
           <label htmlFor="image-upload" className="cursor-pointer">
             <div className="flex flex-col items-center gap-2">
               <Upload className="h-10 w-10 text-muted-foreground" />
               <p className="font-medium">
-                {uploadImages.isPending ? "Uploading..." : "Click to upload photos"}
+                {isUploading ? "Uploading..." : "Click to upload photos"}
               </p>
               <p className="text-sm text-muted-foreground">PNG, JPG up to 10MB each</p>
             </div>
           </label>
         </div>
 
-        {/* Image Preview */}
+        {/* Existing URL images (edit mode) */}
         {data.images.length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {data.images.map((url, index) => (
-              <div key={index} className="relative group aspect-video rounded-lg overflow-hidden bg-secondary">
-                <img src={url} alt={`Upload ${index + 1}`} className="w-full h-full object-cover" />
+              <div key={url} className="relative group aspect-video rounded-lg overflow-hidden bg-secondary">
+                <img src={url} alt={`Image ${index + 1}`} className="w-full h-full object-cover" />
                 <button
-                  onClick={() => removeImage(index)}
+                  onClick={() => removeExistingUrl(index)}
                   className="absolute top-2 right-2 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <X className="h-4 w-4" />
                 </button>
-                {index === 0 && (
+                {index === 0 && data.imageFiles.length === 0 && (
                   <span className="absolute bottom-2 left-2 px-2 py-0.5 bg-primary text-primary-foreground text-xs rounded">
                     Cover
                   </span>
@@ -87,6 +102,36 @@ export function Step4Media({ data, onChange }: Step4Props) {
               </div>
             ))}
           </div>
+        )}
+
+        {/* New file previews */}
+        {data.imageFiles.length > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {data.imageFiles.map((file, index) => (
+              <div key={index} className="relative group aspect-video rounded-lg overflow-hidden bg-secondary">
+                <img
+                  src={URL.createObjectURL(file)}
+                  alt={file.name}
+                  className="w-full h-full object-cover"
+                />
+                <button
+                  onClick={() => removeNewFile(index)}
+                  className="absolute top-2 right-2 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+                {index === 0 && data.images.length === 0 && (
+                  <span className="absolute bottom-2 left-2 px-2 py-0.5 bg-primary text-primary-foreground text-xs rounded">
+                    Cover
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {totalCount === 0 && (
+          <p className="text-sm text-muted-foreground text-center">No photos added yet</p>
         )}
       </div>
 

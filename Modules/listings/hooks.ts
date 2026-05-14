@@ -16,7 +16,8 @@ export const useListing = (id: string | undefined) =>
 export const useCreateListing = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: listingApi.create,
+    mutationFn: ({ data, files }: { data: Parameters<typeof listingApi.create>[0]['data']; files: File[] }) =>
+      listingApi.create({ data, files }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['listings'] }),
     onError: (e) => console.error(getErrorMessage(e)),
   });

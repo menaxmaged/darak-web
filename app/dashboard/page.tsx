@@ -88,22 +88,26 @@ export default function DashboardPage() {
   const isLoading = listingsLoading || leadsLoading || projectsLoading || areasLoading;
 
   const listings = listingsRes?.data ?? [];
-  const leads = leadsRes?.data ?? [];
-  const projects = projectsRes?.data ?? [];
-  const areas = areasRes?.data ?? [];
 
+  console.log('Listings data:', listings);
+  const leads = leadsRes?.meta?.totalItems ?? 0;
+  const projects = projectsRes?.meta?.totalItems ?? 0;
+  const areas = areasRes?.meta?.totalItems ?? 0;
+  console.log('Dashboard data:', { listings, leads, projects, areas });
   const pending = listings.filter((l) => l.listing_status === 'pending').length;
+  console.log('Pending listings count:', pending);
   const approved = listings.filter((l) => l.listing_status === 'approved').length;
+  console.log('Approved listings count:', approved);
   const rejected = listings.filter((l) => l.listing_status === 'rejected').length;
-
+console.log('Rejected listings count:', rejected);
   const statCards = [
-    { label: 'Total Listings', value: listings.length, icon: FileText, sub: 'all time' },
+    { label: 'Total Listings', value: listingsRes?.meta?.totalItems ?? 0, icon: FileText, sub: 'all time' },
     { label: 'Pending Review', value: pending, icon: Clock, sub: 'awaiting action', subColor: 'text-amber-600', accent: true },
     { label: 'Approved', value: approved, icon: CheckCircle2, sub: 'live listings', subColor: 'text-emerald-600' },
     { label: 'Rejected', value: rejected, icon: XCircle, sub: 'not approved', subColor: 'text-red-500' },
-    { label: 'Total Leads', value: leads.length, icon: Phone, sub: 'contact requests' },
-    { label: 'Projects', value: projects.length, icon: Building2, sub: 'active developments' },
-    { label: 'Areas', value: areas.length, icon: MapPin, sub: 'covered locations' },
+    { label: 'Total Leads', value: leads, icon: Phone, sub: 'contact requests' },
+    { label: 'Projects', value: projects, icon: Building2, sub: 'active developments' },
+    { label: 'Areas', value: areas, icon: MapPin, sub: 'covered locations' },
     { label: 'Featured', value: listings.filter((l) => l.is_featured).length, icon: TrendingUp, sub: 'highlighted listings', subColor: 'text-blue-600' },
   ];
 

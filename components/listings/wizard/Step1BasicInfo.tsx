@@ -2,8 +2,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { PROPERTY_TYPES, CITIES } from "@/lib/constants";
+import { PROPERTY_TYPES } from "@/lib/constants";
 import { useAreas } from "@/Modules/areas/areas";
+import { useCities } from "@/Modules/areas/hooks";
+import { useProjects } from "@/Modules/projects/hooks";
 
 interface Step1Props {
   data: {
@@ -12,15 +14,22 @@ interface Step1Props {
     property_type: string;
     property_status: string;
     city: string;
-    area: string;
-    project_name: string;
+    area_id: string;
+    project_id: string;
     address: string;
   };
   onChange: (field: string, value: string) => void;
 }
 
 export function Step1BasicInfo({ data, onChange }: Step1Props) {
-  const { data: areas } = useAreas({ city: data.city });
+  const { data: citiesRes } = useCities();
+  const cities = citiesRes?.data ?? [];
+
+  const { data: areasRes } = useAreas({ city: data.city });
+  const areas = areasRes?.data ?? [];
+
+  const { data: projectsRes } = useProjects({ city: data.city });
+  const projects = projectsRes?.data ?? [];
 
   return (
     <div className="space-y-6">
@@ -85,12 +94,19 @@ export function Step1BasicInfo({ data, onChange }: Step1Props) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>City *</Label>
-          <Select value={data.city} onValueChange={(v) => { onChange("city", v); onChange("area", ""); }}>
+          <Select
+            value={data.city}
+            onValueChange={(v) => {
+              onChange("city", v);
+              onChange("area_id", "");
+              onChange("project_id", "");
+            }}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select city" />
             </SelectTrigger>
             <SelectContent>
-              {CITIES.map((city) => (
+              {cities.map((city) => (
                 <SelectItem key={city} value={city}>{city}</SelectItem>
               ))}
             </SelectContent>
@@ -98,30 +114,42 @@ export function Step1BasicInfo({ data, onChange }: Step1Props) {
         </div>
         <div className="space-y-2">
           <Label>Area *</Label>
-          <Select value={data.area} onValueChange={(v) => onChange("area", v)}>
+          <Select
+            value={data.area_id}
+            onValueChange={(v) => onChange("area_id", v)}
+            disabled={!data.city}
+          >
             <SelectTrigger>
-              <SelectValue placeholder="Select area" />
+              <SelectValue placeholder={data.city ? "Select area" : "Select city first"} />
             </SelectTrigger>
             <SelectContent>
-              {areas?.data.map((area) => (
-                <SelectItem key={area.id} value={area.name}>{area.name}</SelectItem>
-              )) || <SelectItem value="other">Other</SelectItem>}
-              <SelectItem value="other">Other</SelectItem>
+              {areas.map((area) => (
+                <SelectItem key={area.id} value={String(area.id)}>{area.name}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      {/* Project Name & Address */}
+      {/* Project & Address */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="project_name">Compound / Project Name</Label>
-          <Input
-            id="project_name"
-            placeholder="e.g., Madinaty, Palm Hills"
-            value={data.project_name}
-            onChange={(e) => onChange("project_name", e.target.value)}
-          />
+          <Label>Compound / Project</Label>
+          <Select
+            value={data.project_id}
+            onValueChange={(v) => onChange("project_id", v)}
+            disabled={!data.city}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={data.city ? "Select project (optional)" : "Select city first"} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">None</SelectItem>
+              {projects.map((project) => (
+                <SelectItem key={project.id} value={String(project.id)}>{project.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="space-y-2">
           <Label htmlFor="address">Address</Label>

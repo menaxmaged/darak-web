@@ -13,7 +13,7 @@ export interface RoleConfig {
  */
 export const ROLE_CONFIG: Record<string, RoleConfig> = {
   admin: { label: 'Admin', defaultPath: '/dashboard' },
-  user:  { label: 'User',  defaultPath: '/dashboard', fallbackToLogout: true },
+  user:  { label: 'User',  defaultPath: '/dashboard/' },
 };
 
 export type AppRole = keyof typeof ROLE_CONFIG;
