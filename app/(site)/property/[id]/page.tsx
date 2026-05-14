@@ -277,13 +277,13 @@ function PropertyDetail({ listing }: { listing: Listing }) {
             <div className="border border-border rounded-2xl p-5 space-y-3">
               <p className="font-semibold text-sm">Interested in this property?</p>
               <a
-                href="tel:+201000000000"
+                href={`tel:${listing.Advertiser.phone}`}
                 className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-border hover:bg-secondary transition-colors text-sm font-medium"
               >
                 <Phone className="w-4 h-4" /> Call Agent
               </a>
               <a
-                href="https://wa.me/201000000000"
+                href={`https://wa.me/${listing.Advertiser.phone}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white transition-colors text-sm font-medium"
