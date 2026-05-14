@@ -4,12 +4,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Mail, Lock, User, ArrowLeft, Loader2 } from 'lucide-react';
+import { Mail, Lock, ArrowLeft, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { useLogin, useRegister } from '@/Modules/auth/auth';
+import { useLogin } from '@/Modules/auth/auth';
 import { useAuth } from '@/lib/providers/auth-provider';
 import { getErrorMessage } from '@/lib/api-client';
 
@@ -17,29 +17,16 @@ export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
   const loginMutation = useLogin();
-  const registerMutation = useRegister();
 
-  const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
-
-  const isPending = loginMutation.isPending || registerMutation.isPending;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     try {
-      if (isSignUp) {
-        await registerMutation.mutateAsync({ email, password, name: fullName });
-        toast.success('Account created! You can now sign in.');
-        setIsSignUp(false);
-        setPassword('');
-      } else {
-        const result = await loginMutation.mutateAsync({ email, password });
-        if (result?.user && result?.token) {
-          login(result);
-        }
+      const result = await loginMutation.mutateAsync({ email, password });
+      if (result?.user && result?.token) {
+        login(result);
         toast.success('Welcome back!');
         router.push('/dashboard');
       }
@@ -48,9 +35,7 @@ export default function LoginPage() {
     }
   };
 
-  const handleGoogle = () => {
-    toast.info('Google sign-in coming soon.');
-  };
+  const handleGoogle = () => toast.info('Google sign-in coming soon.');
 
   return (
     <div className="min-h-screen flex">
@@ -71,14 +56,8 @@ export default function LoginPage() {
           </Link>
 
           <div className="mb-8">
-            <h1 className="font-display text-3xl font-bold mb-2">
-              {isSignUp ? 'Create your account' : 'Welcome back'}
-            </h1>
-            <p className="text-muted-foreground">
-              {isSignUp
-                ? "Start listing your properties on Egypt's premium marketplace."
-                : 'Sign in to manage your listings.'}
-            </p>
+            <h1 className="font-display text-3xl font-bold mb-2">Welcome back</h1>
+            <p className="text-muted-foreground">Sign in to manage your listings.</p>
           </div>
 
           {/* Google */}
@@ -109,24 +88,6 @@ export default function LoginPage() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            {isSignUp && (
-              <div>
-                <Label htmlFor="fullName">Full Name</Label>
-                <div className="relative mt-1">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="fullName"
-                    type="text"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="John Doe"
-                    className="pl-10 h-12"
-                    required
-                  />
-                </div>
-              </div>
-            )}
-
             <div>
               <Label htmlFor="email">Email</Label>
               <div className="relative mt-1">
@@ -146,14 +107,12 @@ export default function LoginPage() {
             <div>
               <div className="flex items-center justify-between mb-1">
                 <Label htmlFor="password">Password</Label>
-                {!isSignUp && (
-                  <Link
-                    href="/reset-password"
-                    className="text-xs text-primary hover:underline font-medium"
-                  >
-                    Forgot password?
-                  </Link>
-                )}
+                <Link
+                  href="/reset-password"
+                  className="text-xs text-primary hover:underline font-medium"
+                >
+                  Forgot password?
+                </Link>
               </div>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -165,7 +124,6 @@ export default function LoginPage() {
                   placeholder="••••••••"
                   className="pl-10 h-12"
                   required
-                  minLength={6}
                 />
               </div>
             </div>
@@ -173,22 +131,18 @@ export default function LoginPage() {
             <Button
               type="submit"
               className="w-full h-12 gradient-primary font-semibold text-base"
-              disabled={isPending}
+              disabled={loginMutation.isPending}
             >
-              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isSignUp ? 'Create account' : 'Sign in'}
+              {loginMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Sign in
             </Button>
           </form>
 
           <p className="mt-6 text-center text-sm text-muted-foreground">
-            {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
-            <button
-              type="button"
-              onClick={() => { setIsSignUp(!isSignUp); setPassword(''); }}
-              className="text-primary font-medium hover:underline"
-            >
-              {isSignUp ? 'Sign in' : 'Sign up'}
-            </button>
+            Don&apos;t have an account?{' '}
+            <Link href="/signup" className="text-primary font-medium hover:underline">
+              Sign up
+            </Link>
           </p>
         </motion.div>
       </div>
