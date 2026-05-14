@@ -31,6 +31,15 @@ export default function LoginPage() {
         router.push('/dashboard');
       }
     } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const axiosError = error as any;
+      if (axiosError?.response?.status === 403) {
+        const reason = axiosError.response.data?.reason;
+        if (reason === 'account_inactive') {
+          router.push(`/activate-account?email=${encodeURIComponent(email)}`);
+          return;
+        }
+      }
       toast.error(getErrorMessage(error));
     }
   };

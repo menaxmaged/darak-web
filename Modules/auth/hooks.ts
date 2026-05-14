@@ -28,3 +28,21 @@ export const useResetPassword = () => {
     },
   });
 };
+
+export const useVerifyOtp = () => {
+  return useMutation({
+    mutationFn: authApi.verifyOtp,
+    onError: (error) => {
+      console.error('Verify OTP error:', getErrorMessage(error));
+    },
+  });
+};
+
+export const useResendOtp = () => {
+  return useMutation({
+    mutationFn: authApi.resendOtp,
+    onError: (error) => {
+      console.error('Resend OTP error:', getErrorMessage(error));
+    },
+  });
+};
