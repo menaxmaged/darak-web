@@ -1,12 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Pencil, Trash2, Loader2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, Building2, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -22,13 +26,7 @@ const PAGE_SIZE = 20;
 
 const EMPTY: ProjectInsert = { name: '', city: '', developer: '', description: '' };
 
-function ProjectDialog({
-  project,
-  onClose,
-}: {
-  project: Project | null | 'new';
-  onClose: () => void;
-}) {
+function ProjectDialog({ project, onClose }: { project: Project | null | 'new'; onClose: () => void }) {
   const isNew = project === 'new';
   const initial: ProjectInsert = isNew
     ? EMPTY
@@ -45,7 +43,6 @@ function ProjectDialog({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.city.trim()) return;
-
     if (isNew) {
       createProject.mutate(form, {
         onSuccess: () => { toast.success('Project created'); onClose(); },
@@ -187,19 +184,30 @@ export default function ProjectsPage() {
                       {new Date(project.created_at).toLocaleDateString()}
                     </td>
                     <td className="p-4 text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <Button variant="ghost" size="sm" onClick={() => setDialogProject(project)}>
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-destructive hover:text-destructive"
-                          onClick={() => setDeleteTarget(project)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0 rounded-xl hover:bg-secondary">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="rounded-xl">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={() => setDialogProject(project)}
+                            className="rounded-xl cursor-pointer"
+                          >
+                            <Pencil className="mr-2 h-4 w-4" /> Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => setDeleteTarget(project)}
+                            className="rounded-xl cursor-pointer text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" /> Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </td>
                   </tr>
                 ))}
@@ -209,6 +217,7 @@ export default function ProjectsPage() {
         </div>
       ) : (
         <div className="text-center py-16 bg-secondary/40 rounded-xl">
+          <Building2 className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
           <p className="text-muted-foreground">No projects found.</p>
           <Button className="mt-4 gradient-primary" onClick={() => setDialogProject('new')}>
             <Plus className="h-4 w-4 mr-2" /> Add first project

@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Phone, MessageCircle } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Phone, MessageCircle, Activity } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLeads } from '@/Modules/leads/hooks';
 import { TablePagination } from '@/components/ui/table-pagination';
@@ -10,15 +9,40 @@ import type { ContactType } from '@/Modules/leads/types';
 
 const PAGE_SIZE = 20;
 
-const CONTACT_ICONS: Record<ContactType, React.ReactNode> = {
-  call: <Phone className="h-3.5 w-3.5" />,
-  whatsapp: <MessageCircle className="h-3.5 w-3.5" />,
+const CONTACT_COLORS: Record<ContactType, string> = {
+  call:      'bg-blue-100 text-blue-700',
+  whatsapp:  'bg-green-100 text-green-700',
 };
 
-const CONTACT_COLORS: Record<ContactType, string> = {
-  call: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-  whatsapp: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-};
+// ─── Stat / Filter Card ────────────────────────────────────────────────────────
+
+function StatFilterCard({
+  icon: Icon, iconBg, iconColor, count, label, active, onClick,
+}: {
+  icon: React.ElementType; iconBg: string; iconColor: string;
+  count: number | undefined; label: string; active: boolean; onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`bg-card rounded-xl border p-4 text-left w-full transition-all ${
+        active ? 'border-primary ring-2 ring-primary/20' : 'border-border hover:border-primary/40'
+      }`}
+    >
+      <div className="flex items-center gap-3">
+        <div className={`h-10 w-10 rounded-lg ${iconBg} flex items-center justify-center shrink-0`}>
+          <Icon className={`h-5 w-5 ${iconColor}`} />
+        </div>
+        <div>
+          <p className="text-2xl font-bold">{count ?? '—'}</p>
+          <p className="text-sm text-muted-foreground">{label}</p>
+        </div>
+      </div>
+    </button>
+  );
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function LeadsPage() {
   const [typeFilter, setTypeFilter] = useState<ContactType | 'all'>('all');
@@ -32,42 +56,32 @@ export default function LeadsPage() {
       : { page, limit: PAGE_SIZE }
   );
   const leads = leadsRes?.data ?? [];
-  const meta = leadsRes?.meta;
+  const meta  = leadsRes?.meta;
 
-  const callCount = leads.filter((l) => l.contact_type === 'call').length;
-  const waCount = leads.filter((l) => l.contact_type === 'whatsapp').length;
+  // Lightweight count queries — independent of the active page filter
+  const { data: allRes }  = useLeads({ limit: 1 });
+  const { data: callRes } = useLeads({ contactType: 'call',      limit: 1 });
+  const { data: waRes }   = useLeads({ contactType: 'whatsapp',  limit: 1 });
 
   return (
     <>
-      {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
-        {[
-          { label: 'Total Leads', value: isLoading ? '…' : (meta?.totalItems ?? leads.length) },
-          { label: 'Calls', value: isLoading ? '…' : callCount },
-          { label: 'WhatsApp', value: isLoading ? '…' : waCount },
-        ].map(({ label, value }) => (
-          <div key={label} className="bg-card border border-border rounded-xl p-4">
-            <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">{label}</p>
-            <p className="text-2xl font-bold font-display">{value}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Toolbar */}
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-sm text-muted-foreground">
-          {isLoading ? '…' : (meta?.totalItems ?? leads.length)} lead{(meta?.totalItems ?? leads.length) !== 1 ? 's' : ''}
-        </p>
-        <Select value={typeFilter} onValueChange={(v) => setType(v as ContactType | 'all')}>
-          <SelectTrigger className="w-44">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Types</SelectItem>
-            <SelectItem value="call">Call</SelectItem>
-            <SelectItem value="whatsapp">WhatsApp</SelectItem>
-          </SelectContent>
-        </Select>
+      {/* Stat / Filter Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <StatFilterCard
+          icon={Activity} iconBg="bg-secondary" iconColor="text-foreground"
+          count={allRes?.meta?.totalItems} label="Total Leads"
+          active={typeFilter === 'all'} onClick={() => setType('all')}
+        />
+        <StatFilterCard
+          icon={Phone} iconBg="bg-blue-100" iconColor="text-blue-600"
+          count={callRes?.meta?.totalItems} label="Calls"
+          active={typeFilter === 'call'} onClick={() => setType('call')}
+        />
+        <StatFilterCard
+          icon={MessageCircle} iconBg="bg-green-100" iconColor="text-green-600"
+          count={waRes?.meta?.totalItems} label="WhatsApp"
+          active={typeFilter === 'whatsapp'} onClick={() => setType('whatsapp')}
+        />
       </div>
 
       {/* Table */}
@@ -94,13 +108,13 @@ export default function LeadsPage() {
                   <tr key={lead.id} className="border-t border-border hover:bg-secondary/40 transition-colors">
                     <td className="p-4">
                       <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full ${CONTACT_COLORS[lead.contact_type]}`}>
-                        {CONTACT_ICONS[lead.contact_type]}
+                        {lead.contact_type === 'call'
+                          ? <Phone className="h-3.5 w-3.5" />
+                          : <MessageCircle className="h-3.5 w-3.5" />}
                         {lead.contact_type === 'whatsapp' ? 'WhatsApp' : 'Call'}
                       </span>
                     </td>
-                    <td className="p-4 text-sm font-mono text-muted-foreground">
-                      {lead.listing_id}
-                    </td>
+                    <td className="p-4 text-sm font-mono text-muted-foreground">{lead.listing_id}</td>
                     <td className="p-4 text-sm font-mono text-muted-foreground hidden md:table-cell">
                       {lead.advertiser_id}
                     </td>
@@ -115,9 +129,13 @@ export default function LeadsPage() {
         </div>
       ) : (
         <div className="text-center py-16 bg-secondary/40 rounded-xl">
-          <p className="text-muted-foreground">No {typeFilter !== 'all' ? typeFilter : ''} leads found.</p>
+          <Activity className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+          <p className="text-muted-foreground">
+            No {typeFilter !== 'all' ? typeFilter : ''} leads found.
+          </p>
         </div>
       )}
+
       <TablePagination meta={meta} page={page} onPageChange={setPage} />
     </>
   );

@@ -1,11 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Pencil, Trash2, Loader2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, MapPin, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -18,26 +22,18 @@ const PAGE_SIZE = 20;
 
 // ─── Form Dialog ──────────────────────────────────────────────────────────────
 
-function AreaDialog({
-  area,
-  onClose,
-}: {
-  area: Area | null | 'new';
-  onClose: () => void;
-}) {
+function AreaDialog({ area, onClose }: { area: Area | null | 'new'; onClose: () => void }) {
   const isNew = area === 'new';
   const initial = isNew ? { name: '', city: '' } : { name: area?.name ?? '', city: area?.city ?? '' };
 
   const [form, setForm] = useState<AreaInsert>(initial);
   const createArea = useCreateArea();
   const updateArea = useUpdateArea();
-
   const isPending = createArea.isPending || updateArea.isPending;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.city.trim()) return;
-
     if (isNew) {
       createArea.mutate(form, {
         onSuccess: () => { toast.success('Area created'); onClose(); },
@@ -158,49 +154,59 @@ export default function AreasPage() {
         </div>
       ) : areas.length > 0 ? (
         <div className="bg-card rounded-xl border border-border overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-secondary">
-              <tr>
-                <th className="text-left p-4 text-sm font-medium">Name</th>
-                <th className="text-left p-4 text-sm font-medium">City</th>
-                <th className="text-left p-4 text-sm font-medium hidden sm:table-cell">Created</th>
-                <th className="p-4 text-sm font-medium text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {areas.map((area) => (
-                <tr key={area.id} className="border-t border-border hover:bg-secondary/40 transition-colors">
-                  <td className="p-4 font-medium text-sm">{area.name}</td>
-                  <td className="p-4 text-sm text-muted-foreground">{area.city}</td>
-                  <td className="p-4 text-sm text-muted-foreground hidden sm:table-cell">
-                    {new Date(area.created_at).toLocaleDateString()}
-                  </td>
-                  <td className="p-4 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setDialogArea(area)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-destructive hover:text-destructive"
-                        onClick={() => setDeleteTarget(area)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-secondary">
+                <tr>
+                  <th className="text-left p-4 text-sm font-medium">Name</th>
+                  <th className="text-left p-4 text-sm font-medium">City</th>
+                  <th className="text-left p-4 text-sm font-medium hidden sm:table-cell">Created</th>
+                  <th className="p-4 text-sm font-medium text-right">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {areas.map((area) => (
+                  <tr key={area.id} className="border-t border-border hover:bg-secondary/40 transition-colors">
+                    <td className="p-4 font-medium text-sm">{area.name}</td>
+                    <td className="p-4 text-sm text-muted-foreground">{area.city}</td>
+                    <td className="p-4 text-sm text-muted-foreground hidden sm:table-cell">
+                      {new Date(area.created_at).toLocaleDateString()}
+                    </td>
+                    <td className="p-4 text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0 rounded-xl hover:bg-secondary">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="rounded-xl">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={() => setDialogArea(area)}
+                            className="rounded-xl cursor-pointer"
+                          >
+                            <Pencil className="mr-2 h-4 w-4" /> Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => setDeleteTarget(area)}
+                            className="rounded-xl cursor-pointer text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" /> Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       ) : (
         <div className="text-center py-16 bg-secondary/40 rounded-xl">
+          <MapPin className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
           <p className="text-muted-foreground">No areas found.</p>
           <Button className="mt-4 gradient-primary" onClick={() => setDialogArea('new')}>
             <Plus className="h-4 w-4 mr-2" /> Add first area
