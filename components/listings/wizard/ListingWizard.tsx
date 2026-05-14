@@ -263,8 +263,7 @@ export function ListingWizard({ onClose, listing }: ListingWizardProps) {
   const isPending = createListing.isPending || updateListing.isPending || uploadImages.isPending;
 
   return (
-    <div className="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 overflow-y-auto">
-      <div className="container-custom py-8">
+    <div className="container-custom py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <h1 className="font-display text-2xl font-bold">
@@ -324,7 +323,7 @@ export function ListingWizard({ onClose, listing }: ListingWizardProps) {
             </div>
           </div>
         </div>
-      </div>
     </div>
   );
 }
+
