@@ -244,7 +244,7 @@ export default function HomePage() {
             <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={() => router.push("/auth?mode=signup")}>
               Get Started Free
             </Button>
-            <Button size="lg" variant="outline" className="border-background/30 text-background hover:bg-background/10" onClick={() => router.push("/pricing")}>
+            <Button size="lg" variant="outline" className="border-background/30  text-black hover:bg-background/10 hover:text-background" onClick={() => router.push("/pricing")}>
               View Pricing
             </Button>
           </div>

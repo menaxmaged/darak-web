@@ -47,7 +47,7 @@ export function Footer() {
         </div>
         
         <div className="border-t border-muted-foreground/20 mt-12 pt-8 text-center text-sm text-muted-foreground">
-          © 2025 Darak. All rights reserved.
+          © {new Date().getFullYear()} Darak. All rights reserved.
         </div>
       </div>
     </footer>
