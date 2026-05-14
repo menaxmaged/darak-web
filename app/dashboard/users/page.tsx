@@ -26,7 +26,7 @@ import { MoreHorizontal, UserCheck, UserX, Shield, ShieldOff, Eye } from 'lucide
 import { toast } from 'sonner';
 import { User } from '@/lib/types';
 import { Input } from '@/components/ui/input';
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
   Dialog,
@@ -63,10 +63,6 @@ function UsersPageContent() {
     ...(orderFilter ? { order: orderFilter } : {}),
   };
 
-  useEffect(() => {
-    console.log('Users list params:', params);
-  }, [params]);
-
   const { data: usersData, isLoading, isFetching } = useUsers(params);
   const { data: selectedUser, isLoading: isUserLoading } = useUser({
     username: selectedUsername ?? undefined,
@@ -74,7 +70,6 @@ function UsersPageContent() {
   const banUserMutation = useBanUser();
   const editRoleMutation = useEditRole();
   const editStatusMutation = useEditStatus();
-  console.log('sss',usersData);
 
   const handleBanToggle = async (user: User) => {
     try {

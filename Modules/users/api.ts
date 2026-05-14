@@ -12,9 +12,8 @@ import { mockUsersList, mockUserDetail, mockUserSuccess } from '@/Modules/users/
 
 export const userApi = {
   listUsers: async (params?: any) => {
-    console.log('Fetching users with params:', params);
-      const response = await api.get<UsersListResponse>('/admin/list-users', { params });
-      return { data: response.data.data, meta: response.data.meta };
+    const response = await api.get<UsersListResponse>('/admin/list-users', { params });
+    return { data: response.data.data, meta: response.data.meta };
   },
 
   getUser: async (params: { username?: string; email?: string; id?: string }) => {
@@ -41,7 +40,6 @@ export const userApi = {
   editStatus: async (data: EditStatusRequest) => {
     return withMock(async () => {
       const response = await api.put('/admin/edit-status', data);
-      console.log('dd', response);
       return response.data;
     }, mockUserSuccess);
   },

@@ -2,7 +2,6 @@ export const getMockMode = () => process.env.NEXT_PUBLIC_USE_MOCKS ?? '';
 
 export const isMockEnabled = () => {
   const mode = getMockMode();
-  console.log('Current mock mode:', mode);
   return mode === 'true' || mode === 'fallback';
 };
 

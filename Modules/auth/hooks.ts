@@ -15,7 +15,6 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: authApi.login,
     onError: (error) => {
-      console.log('Login error encountered:', error);
       console.error('Login error:', getErrorMessage(error));
     },
   });

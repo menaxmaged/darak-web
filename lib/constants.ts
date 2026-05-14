@@ -60,37 +60,6 @@ export const SUBSCRIBER_STATUS = {
   INACTIVE: 'inactive',
 } as const;
 
-// Storage keys
-export const STORAGE_KEYS = {
-  AUTH_TOKEN: 'AIM_admin_token',
-  USER_ROLE: 'AIM_admin_role',
-} as const;
-
-// API endpoints (for reference)
-export const API_ENDPOINTS = {
-  // Auth
-  LOGIN: '/auth/login',
-  RESET_PASSWORD: '/auth/reset-password',
-  
-  // Users
-  LIST_USERS: '/admin/list-users',
-  BAN_USER: '/admin/ban-user',
-  EDIT_ROLE: '/admin/edit-role',
-  EDIT_STATUS: '/admin/edit-status',
-  
-  // Properties
-  LIST_PROPERTIES: '/property/list',
-  ADD_PROPERTY: '/property/add',
-  EDIT_PROPERTY: '/property/edit',
-  
-  // Contacts
-  LIST_CONTACTS: '/contact/list',
-  UPDATE_CONTACT: '/contact/update',
-  
-  // Newsletter
-  LIST_SUBSCRIBERS: '/newsletter/list',
-} as const;
-
 // Pagination defaults
 export const PAGINATION = {
   DEFAULT_PAGE_SIZE: 10,
