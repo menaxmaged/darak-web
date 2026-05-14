@@ -21,7 +21,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Darak Dashboard",
+  title: "Darak",
   description: "Darak is Egypt's premier real estate marketplace for buying properties. Explore our dashboard to manage your listings, view analytics, and connect with potential buyers.",
 };
 
