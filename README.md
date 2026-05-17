@@ -1,4 +1,4 @@
-# Via Stays - Admin Dashboard
+# Lvn - Admin Dashboard
 
 A high-end admin dashboard built with Next.js, Tailwind CSS, Shadcn/UI, and TanStack Query.
 
@@ -84,7 +84,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser.
 ## Project Structure
 
 ```
-eyoot-dashboard/
+lvn-dashboard/
 ├── app/
 │   ├── auth/              # Authentication pages
 │   ├── dashboard/         # Main dashboard pages

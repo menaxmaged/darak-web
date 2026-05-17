@@ -53,7 +53,7 @@ export type NavIconName = keyof typeof DASHBOARD_NAV_ICONS;
 
 export const DASHBOARD_CONFIG = {
   brand: {
-    name: 'Eyoot Dashboard',
+    name: 'lvn Dashboard',
     logo: '/logo.png',
     themeColor: '#FFAF00',
   },

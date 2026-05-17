@@ -1,4 +1,4 @@
-// Brand Colors (matching Via Stays design system)
+// Brand Colors (matching Lvn design system)
 export const COLORS = {
   RUST: '#A83D0F',
   CREAM: '#F9F8F6',

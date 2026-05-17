@@ -34,7 +34,7 @@ export default function ResetPasswordPage() {
         <CardHeader className="space-y-3 text-center pb-8">
           <div className="flex justify-center mb-4">
             <h1 className="font-serif text-5xl text-brand-rust tracking-tight">
-eyoot             </h1>
+lvn             </h1>
           </div>
           <CardTitle className="text-2xl font-serif text-brand-charcoal">
             Reset Password
@@ -56,7 +56,7 @@ eyoot             </h1>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="admin@eyoot.com"
+                  placeholder="admin@lvn.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required

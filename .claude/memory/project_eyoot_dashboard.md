@@ -1,10 +1,10 @@
 ---
-name: Eyoot Dashboard Project Context
-description: Full context for the Eyoot admin dashboard project — architecture, sections built, patterns used
+name: lvn Dashboard Project Context
+description: Full context for the lvn admin dashboard project — architecture, sections built, patterns used
 type: project
 ---
 
-This is a Next.js 16 + TypeScript + Tailwind v4 + TanStack React Query v5 admin dashboard for the Eyoot student internship platform.
+This is a Next.js 16 + TypeScript + Tailwind v4 + TanStack React Query v5 admin dashboard for the lvn student internship platform.
 
 **Core architecture:**
 - API layer: `lib/api-client.ts` (Axios with JWT interceptor, `api-key` header)
@@ -32,7 +32,7 @@ This is a Next.js 16 + TypeScript + Tailwind v4 + TanStack React Query v5 admin 
 - `admins/page.tsx` — role reference table + admin user management
 - `settings/page.tsx` — 6 tabbed sections (rules, IBM, notifications, capacity, branding, permissions)
 
-**Key types:** `lib/eyoot-types.ts` — Student, Application, Company, Position, IBMProof, Workshop, Course, VolunteeringOpportunity, Reel, Certificate, Notification, DashboardStats, AdminUser
+**Key types:** `lib/lvn-types.ts` — Student, Application, Company, Position, IBMProof, Workshop, Course, VolunteeringOpportunity, Reel, Certificate, Notification, DashboardStats, AdminUser
 
 **Status helpers:** `lib/status-helpers.ts` — APPLICATION_STATUS_CONFIG, IBM_PROOF_STATUS_CONFIG, formatDate, formatDateTime, capacityColor, capacityTextColor
 
