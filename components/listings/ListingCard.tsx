@@ -81,9 +81,9 @@ export function ListingCard({ listing }: ListingCardProps) {
             <p className="font-display font-bold text-xl text-primary">
               {formatPriceEGP(Number(listing.price))}
             </p>
-            {!listing.is_cash_only && listing.down_payment_percentage && (
+            {!listing.is_cash_only && listing.down_payment_amount && (
               <p className="text-xs text-muted-foreground">
-                {listing.down_payment_percentage}% down · {listing.installment_years} years
+                {listing.down_payment_amount}% down · {listing.installment_years} years
               </p>
             )}
           </div>

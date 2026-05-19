@@ -17,7 +17,7 @@ export interface Listing {
   bathrooms: number;
   finishing: string | null;
   delivery_year: number | null;
-  down_payment_percentage: number | null;
+  down_payment_amount: number | null;
   installment_years: number | null;
   is_featured: boolean;
   listing_status: ListingStatus;
@@ -45,7 +45,7 @@ export type ListingInsert = {
   description?: string;
   finishing?: string;
   delivery_year?: number;
-  down_payment_percentage?: number;
+  down_payment_amount?: number;
   installment_years?: number;
   is_cash_only?: boolean;
   images?: string[];
@@ -54,7 +54,7 @@ export type ListingInsert = {
 export type ListingUpdate = Partial<ListingInsert>;
 
 export interface ListingsFilters {
-  propertyStatus?: PropertyStatus;
+  propertyStatus?: PropertyStatus | 'for-sale';
   propertyType?: string;
   city?: string;
   areaId?: number;
@@ -69,10 +69,10 @@ export interface ListingsFilters {
   deliveryYear?: number;
   minDownPayment?: number;
   maxDownPayment?: number;
-  listingStatus?: ListingStatus;
+  listingStatus?: ListingStatus | 'active';
   advertiserId?: string;
   isFeatured?: boolean;
-  sortBy?: 'newest' | 'price_low' | 'price_high' | 'delivery';
+  sortBy?: 'newest' | 'price_low' | 'price_high' | 'delivery' | 'price';
   page?: number;
   limit?: number;
 }

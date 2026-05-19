@@ -2,28 +2,26 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { INSTALLMENT_FREQUENCIES, formatPriceEGP, calculateInstallment } from "@/lib/constants";
+import { formatPriceEGP, calculateInstallment } from "@/lib/constants";
 
 interface Step2Props {
   data: {
     price: string;
     is_cash_only: boolean;
-    down_payment_percentage: string;
+    down_payment_amount: string;
     installment_years: string;
-    installment_frequency: string;
   };
   onChange: (field: string, value: string | boolean) => void;
 }
 
 export function Step2Payment({ data, onChange }: Step2Props) {
   const price = Number(data.price) || 0;
-  const downPaymentPercent = Number(data.down_payment_percentage) || 0;
+  const downPaymentPercent = Number(data.down_payment_amount) || 0;
   const downPaymentAmount = Math.round((price * downPaymentPercent) / 100);
   const years = Number(data.installment_years) || 0;
-  const frequency = data.installment_frequency;
-  
-  const installmentAmount = price && !data.is_cash_only && years && frequency
-    ? calculateInstallment(price, downPaymentPercent, years, frequency)
+
+  const installmentAmount = price && !data.is_cash_only && years
+    ? calculateInstallment(price, downPaymentPercent, years, "monthly")
     : 0;
 
   return (
@@ -67,15 +65,15 @@ export function Step2Payment({ data, onChange }: Step2Props) {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="down_payment">Down Payment (%)</Label>
+              <Label htmlFor="down_payment">Down Payment</Label>
               <Input
                 id="down_payment"
                 type="number"
-                min="0"
-                max="100"
+                min={price / 10}
+                max={price}
                 placeholder="e.g., 10"
-                value={data.down_payment_percentage}
-                onChange={(e) => onChange("down_payment_percentage", e.target.value)}
+                value={data.down_payment_amount}
+                onChange={(e) => onChange("down_payment_amount", e.target.value)}
               />
               {downPaymentAmount > 0 && (
                 <p className="text-sm text-primary font-medium">
@@ -102,30 +100,11 @@ export function Step2Payment({ data, onChange }: Step2Props) {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label>Installment Frequency</Label>
-            <Select 
-              value={data.installment_frequency} 
-              onValueChange={(v) => onChange("installment_frequency", v)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select frequency" />
-              </SelectTrigger>
-              <SelectContent>
-                {INSTALLMENT_FREQUENCIES.map((freq) => (
-                  <SelectItem key={freq.value} value={freq.value}>{freq.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
           {installmentAmount > 0 && (
             <div className="p-4 bg-primary/10 rounded-lg">
               <p className="text-sm text-muted-foreground">Calculated Installment</p>
               <p className="text-2xl font-bold text-primary">{formatPriceEGP(installmentAmount)}</p>
-              <p className="text-sm text-muted-foreground">
-                per {INSTALLMENT_FREQUENCIES.find(f => f.value === frequency)?.label.toLowerCase() || 'installment'}
-              </p>
+              <p className="text-sm text-muted-foreground">per month</p>
             </div>
           )}
         </div>

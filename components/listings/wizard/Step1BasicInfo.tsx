@@ -151,7 +151,7 @@ export function Step1BasicInfo({ data, onChange }: Step1Props) {
             </SelectContent>
           </Select>
         </div>
-        <div className="space-y-2">
+        {/* <div className="space-y-2">
           <Label htmlFor="address">Address</Label>
           <Input
             id="address"
@@ -159,7 +159,7 @@ export function Step1BasicInfo({ data, onChange }: Step1Props) {
             value={data.address}
             onChange={(e) => onChange("address", e.target.value)}
           />
-        </div>
+        </div> */}
       </div>
     </div>
   );

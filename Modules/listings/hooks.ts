@@ -6,6 +6,9 @@ import type { ListingsFilters } from './types';
 export const useListings = (filters: ListingsFilters = {}) =>
   useQuery({ queryKey: ['listings', filters], queryFn: () => listingApi.list(filters) });
 
+export const usePublicListings = (filters: ListingsFilters = {}) =>
+  useQuery({ queryKey: ['publicListings', filters], queryFn: () => listingApi.publicList(filters) });
+
 export const useListing = (id: string | undefined) =>
   useQuery({
     queryKey: ['listing', id],

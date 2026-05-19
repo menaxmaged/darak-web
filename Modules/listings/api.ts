@@ -14,6 +14,13 @@ export const listingApi = {
     }, mockListingsList);
   },
 
+  publicList: async (filters: ListingsFilters = {}) => {
+    return withMock(async () => {
+      const response = await api.get<Listing[]>('/listings', { params: filters });
+      return { data: response.data.data ?? [], meta: response.data.meta };
+    }, mockListingsList);
+  },
+
   get: async (id: string) => {
     return withMock(async () => {
       const response = await api.get<Listing>(`/admin/listings/${id}`);
@@ -40,7 +47,7 @@ export const listingApi = {
       append('description', data.description);
       append('finishing', data.finishing);
       append('delivery_year', data.delivery_year);
-      append('down_payment_percentage', data.down_payment_percentage);
+      append('down_payment_amount', data.down_payment_amount);
       append('installment_years', data.installment_years);
       if (data.is_cash_only !== undefined) form.append('is_cash_only', String(data.is_cash_only));
       files.forEach((f) => form.append('images', f));

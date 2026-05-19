@@ -34,9 +34,8 @@ export interface WizardData {
   // Step 2
   price: string;
   is_cash_only: boolean;
-  down_payment_percentage: string;
+  down_payment_amount: string;
   installment_years: string;
-  installment_frequency: string;
   // Step 3
   built_up_area: string;
   land_area: string;
@@ -67,9 +66,8 @@ const emptyData: WizardData = {
   address: "",
   price: "",
   is_cash_only: false,
-  down_payment_percentage: "",
+  down_payment_amount: "",
   installment_years: "",
-  installment_frequency: "",
   built_up_area: "",
   land_area: "",
   bedrooms: "",
@@ -99,9 +97,8 @@ function listingToWizardData(listing: Listing): WizardData {
     address: "",
     price: String(listing.price),
     is_cash_only: listing.is_cash_only,
-    down_payment_percentage: listing.down_payment_percentage != null ? String(listing.down_payment_percentage) : "",
+    down_payment_amount: listing.down_payment_amount != null ? String(listing.down_payment_amount) : "",
     installment_years: listing.installment_years != null ? String(listing.installment_years) : "",
-    installment_frequency: "",
     built_up_area: String(listing.built_up_area),
     land_area: "",
     bedrooms: String(listing.bedrooms),
@@ -162,7 +159,7 @@ export function ListingWizard({ onClose, listing }: ListingWizardProps) {
           toast.error("Please enter the price");
           return false;
         }
-        if (!data.is_cash_only && (!data.down_payment_percentage || !data.installment_years || !data.installment_frequency)) {
+        if (!data.is_cash_only && (!data.down_payment_amount || !data.installment_years)) {
           toast.error("Please complete the payment plan details or mark as cash only");
           return false;
         }
@@ -206,10 +203,8 @@ export function ListingWizard({ onClose, listing }: ListingWizardProps) {
 
   const handleSubmit = async () => {
     const price = Number(data.price);
-    const downPaymentPercent = Number(data.down_payment_percentage) || 0;
+    const downPaymentPercent = Number(data.down_payment_amount) || 0;
     const years = Number(data.installment_years) || 0;
-    const frequency = data.installment_frequency;
-
     const areaId = data.area_id && data.area_id !== "none" ? Number(data.area_id) : null;
     const projectId = data.project_id && data.project_id !== "none" ? Number(data.project_id) : null;
 
@@ -230,9 +225,9 @@ export function ListingWizard({ onClose, listing }: ListingWizardProps) {
         ? Number(data.delivery_year.replace("+", ""))
         : undefined,
       is_cash_only: data.is_cash_only,
-      down_payment_percentage: data.is_cash_only ? undefined : downPaymentPercent || undefined,
+      down_payment_amount: data.is_cash_only ? undefined : downPaymentPercent || undefined,
       installment_years: data.is_cash_only ? undefined : years || undefined,
-      installment_amount: data.is_cash_only ? undefined : calculateInstallment(price, downPaymentPercent, years, frequency),
+      installment_amount: data.is_cash_only ? undefined : calculateInstallment(price, downPaymentPercent, years, "monthly"),
     };
 
     try {

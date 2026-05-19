@@ -195,8 +195,8 @@ function ReviewDialog({ listing, onClose }: { listing: Listing | null; onClose: 
                     const extras: [string, string][] = [
                       ['Payment', listing.is_cash_only ? 'Cash only' : 'Cash & installments'],
                     ];
-                    if (!listing.is_cash_only && listing.down_payment_percentage != null)
-                      extras.push(['Down payment', `${listing.down_payment_percentage}%`]);
+                    if (!listing.is_cash_only && listing.down_payment_amount != null)
+                      extras.push(['Down payment', `${listing.down_payment_amount}%`]);
                     if (!listing.is_cash_only && listing.installment_years)
                       extras.push(['Installment', `${listing.installment_years} yrs`]);
                     if (listing.delivery_year)

@@ -128,9 +128,9 @@ function PropertySkeleton() {
 
 function PropertyDetail({ listing }: { listing: Listing }) {
   const isReady = listing.property_status === 'ready';
-  const hasPlan = !listing.is_cash_only && listing.down_payment_percentage != null && listing.installment_years;
+  const hasPlan = !listing.is_cash_only && listing.down_payment_amount != null && listing.installment_years;
   const downAmount = hasPlan
-    ? (listing.price * (listing.down_payment_percentage! / 100))
+    ? (listing.price * (listing.down_payment_amount! / 100))
     : null;
 
   return (
@@ -219,7 +219,7 @@ function PropertyDetail({ listing }: { listing: Listing }) {
               <div className="grid sm:grid-cols-3 gap-4">
                 <div className="p-4 border border-border rounded-xl">
                   <p className="text-xs text-muted-foreground mb-1">Down Payment</p>
-                  <p className="font-bold text-lg">{listing.down_payment_percentage}%</p>
+                  <p className="font-bold text-lg">{listing.down_payment_amount}%</p>
                   {downAmount != null && (
                     <p className="text-xs text-muted-foreground">{formatPriceEGP(downAmount)}</p>
                   )}
@@ -254,7 +254,7 @@ function PropertyDetail({ listing }: { listing: Listing }) {
                 </span>
               ) : hasPlan ? (
                 <span className="text-xs text-muted-foreground">
-                  From {listing.down_payment_percentage}% down · {listing.installment_years} yrs
+                  From {listing.down_payment_amount}% down · {listing.installment_years} yrs
                 </span>
               ) : null}
 

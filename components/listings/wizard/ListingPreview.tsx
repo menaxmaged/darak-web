@@ -1,4 +1,4 @@
-import { PROPERTY_TYPES, FINISHING_TYPES, FLOOR_TYPES, VIEW_TYPES, formatPriceEGP, calculateInstallment, INSTALLMENT_FREQUENCIES } from "@/lib/constants";
+import { PROPERTY_TYPES, FINISHING_TYPES, FLOOR_TYPES, VIEW_TYPES, formatPriceEGP, calculateInstallment } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, BedDouble, Bath, Maximize, Calendar, Phone, MessageCircle } from "lucide-react";
 
@@ -13,9 +13,8 @@ interface ListingPreviewProps {
     project_id: string;
     price: string;
     is_cash_only: boolean;
-    down_payment_percentage: string;
+    down_payment_amount: string;
     installment_years: string;
-    installment_frequency: string;
     built_up_area: string;
     land_area: string;
     bedrooms: string;
@@ -39,18 +38,17 @@ export function ListingPreview({ data, previewImages, areaName, projectName }: L
     img.startsWith('http://') || img.startsWith('https://') ? img : `${process.env.NEXT_PUBLIC_API_URL}${img}`
   );
   const price = Number(data.price) || 0;
-  const downPaymentPercent = Number(data.down_payment_percentage) || 0;
+  const downPaymentPercent = Number(data.down_payment_amount) || 0;
   const downPaymentAmount = Math.round((price * downPaymentPercent) / 100);
   const years = Number(data.installment_years) || 0;
-  const installmentAmount = price && !data.is_cash_only && years && data.installment_frequency
-    ? calculateInstallment(price, downPaymentPercent, years, data.installment_frequency)
+  const installmentAmount = price && !data.is_cash_only && years
+    ? calculateInstallment(price, downPaymentPercent, years, "monthly")
     : 0;
 
   const propertyTypeLabel = PROPERTY_TYPES.find(t => t.value === data.property_type)?.label || data.property_type;
   const finishingLabel = FINISHING_TYPES.find(f => f.value === data.finishing)?.label || data.finishing;
   const floorLabel = FLOOR_TYPES.find(f => f.value === data.floor)?.label || data.floor;
   const viewLabel = VIEW_TYPES.find(v => v.value === data.view)?.label || data.view;
-  const frequencyLabel = INSTALLMENT_FREQUENCIES.find(f => f.value === data.installment_frequency)?.label || '';
 
   return (
     <div className="space-y-6">
@@ -95,7 +93,7 @@ export function ListingPreview({ data, previewImages, areaName, projectName }: L
             <p className="text-3xl font-bold text-primary">{price ? formatPriceEGP(price) : "Price not set"}</p>
             {!data.is_cash_only && installmentAmount > 0 && (
               <p className="text-sm text-muted-foreground">
-                {formatPriceEGP(downPaymentAmount)} down payment • {formatPriceEGP(installmentAmount)}/{frequencyLabel.toLowerCase()} for {years} years
+                {formatPriceEGP(downPaymentAmount)} down payment • {formatPriceEGP(installmentAmount)}/month for {years} years
               </p>
             )}
           </div>
