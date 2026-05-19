@@ -5,6 +5,7 @@ const mockProjects: Project[] = [
   {
     id: 'proj-001',
     name: 'Midtown',
+    city_id: 'city-001',
     city: 'Cairo',
     developer: 'Dara Development',
     description: 'Mixed-use development in New Cairo.',
@@ -13,6 +14,7 @@ const mockProjects: Project[] = [
   {
     id: 'proj-002',
     name: 'Palm Hills',
+    city_id: 'city-002',
     city: 'Giza',
     developer: 'Palm Hills Developments',
     description: 'Gated residential community in 6th of October.',
@@ -21,6 +23,7 @@ const mockProjects: Project[] = [
   {
     id: 'proj-003',
     name: 'Marassi',
+    city_id: 'city-004',
     city: 'Alexandria',
     developer: 'Emaar Misr',
     description: 'Beachfront resort-style community.',

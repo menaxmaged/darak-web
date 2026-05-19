@@ -16,33 +16,31 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { useProjects, useCreateProject, useUpdateProject, useDeleteProject } from '@/Modules/projects/hooks';
-import { useCities } from '@/Modules/areas/hooks';
+import { useCitiesAdmin } from '@/Modules/cities/hooks';
 import { TablePagination } from '@/components/ui/table-pagination';
+import type { City } from '@/Modules/cities/types';
 import type { Project, ProjectInsert } from '@/Modules/projects/types';
 
 const PAGE_SIZE = 20;
 
 // ─── Form Dialog ──────────────────────────────────────────────────────────────
 
-const EMPTY: ProjectInsert = { name: '', city: '', developer: '', description: '' };
-
-function ProjectDialog({ project, onClose }: { project: Project | null | 'new'; onClose: () => void }) {
+function ProjectDialog({
+  project, cities, onClose,
+}: { project: Project | null | 'new'; cities: City[]; onClose: () => void }) {
   const isNew = project === 'new';
-  const initial: ProjectInsert = isNew
-    ? EMPTY
-    : { name: project?.name ?? '', city: project?.city ?? '', developer: project?.developer ?? '', description: project?.description ?? '' };
+  const initial: ProjectInsert = !isNew && project
+    ? { name: (project as Project).name, city_id: (project as Project).city_id, developer: (project as Project).developer, description: (project as Project).description }
+    : { name: '', city_id: '', developer: '', description: '' };
 
   const [form, setForm] = useState<ProjectInsert>(initial);
   const createProject = useCreateProject();
   const updateProject = useUpdateProject();
   const isPending = createProject.isPending || updateProject.isPending;
 
-  const set = (key: keyof ProjectInsert) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-    setForm((f) => ({ ...f, [key]: e.target.value }));
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name.trim() || !form.city.trim()) return;
+    if (!form.name.trim() || !form.city_id) return;
     if (isNew) {
       createProject.mutate(form, {
         onSuccess: () => { toast.success('Project created'); onClose(); },
@@ -68,19 +66,51 @@ function ProjectDialog({ project, onClose }: { project: Project | null | 'new'; 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="proj-name">Name</Label>
-            <Input id="proj-name" value={form.name} onChange={set('name')} placeholder="e.g. Swan Lake" className="mt-1" required />
+            <Input
+              id="proj-name"
+              value={form.name}
+              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              placeholder="e.g. Swan Lake"
+              className="mt-1"
+              required
+            />
           </div>
           <div>
-            <Label htmlFor="proj-city">City</Label>
-            <Input id="proj-city" value={form.city} onChange={set('city')} placeholder="e.g. Cairo" className="mt-1" required />
+            <Label>City</Label>
+            <Select
+              value={form.city_id}
+              onValueChange={(v) => setForm((f) => ({ ...f, city_id: v }))}
+            >
+              <SelectTrigger className="mt-1">
+                <SelectValue placeholder="Select a city" />
+              </SelectTrigger>
+              <SelectContent>
+                {cities.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div>
             <Label htmlFor="proj-dev">Developer</Label>
-            <Input id="proj-dev" value={form.developer ?? ''} onChange={set('developer')} placeholder="e.g. Hassan Allam" className="mt-1" />
+            <Input
+              id="proj-dev"
+              value={form.developer ?? ''}
+              onChange={(e) => setForm((f) => ({ ...f, developer: e.target.value }))}
+              placeholder="e.g. Hassan Allam"
+              className="mt-1"
+            />
           </div>
           <div>
             <Label htmlFor="proj-desc">Description</Label>
-            <Textarea id="proj-desc" value={form.description ?? ''} onChange={set('description')} placeholder="Short description…" rows={3} className="mt-1" />
+            <Textarea
+              id="proj-desc"
+              value={form.description ?? ''}
+              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+              placeholder="Short description…"
+              rows={3}
+              className="mt-1"
+            />
           </div>
           <DialogFooter className="pt-2">
             <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
@@ -106,14 +136,16 @@ export default function ProjectsPage() {
   const setCity = (v: string) => { setCityFilter(v); setPage(1); };
 
   const { data: projectsRes, isLoading } = useProjects(
-    cityFilter !== 'all' ? { city: cityFilter, page, limit: PAGE_SIZE } : { page, limit: PAGE_SIZE }
+    cityFilter !== 'all' ? { city_id: cityFilter, page, limit: PAGE_SIZE } : { page, limit: PAGE_SIZE }
   );
-  const { data: citiesRes } = useCities();
+  const { data: citiesRes } = useCitiesAdmin({ limit: 100 });
   const deleteProject = useDeleteProject();
 
   const projects = projectsRes?.data ?? [];
   const meta = projectsRes?.meta;
-  const cities: string[] = (citiesRes as { data?: string[] } | undefined)?.data ?? [];
+  const cities: City[] = citiesRes?.data ?? [];
+
+  const cityName = (city_id: string) => cities.find((c) => c.id === city_id)?.name ?? city_id;
 
   const handleDelete = () => {
     if (!deleteTarget) return;
@@ -138,7 +170,7 @@ export default function ProjectsPage() {
             <SelectContent>
               <SelectItem value="all">All cities</SelectItem>
               {cities.map((c) => (
-                <SelectItem key={c} value={c}>{c}</SelectItem>
+                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -173,7 +205,9 @@ export default function ProjectsPage() {
                 {projects.map((project) => (
                   <tr key={project.id} className="border-t border-border hover:bg-secondary/40 transition-colors">
                     <td className="p-4 font-medium text-sm">{project.name}</td>
-                    <td className="p-4 text-sm text-muted-foreground">{project.city}</td>
+                    <td className="p-4 text-sm text-muted-foreground">
+                      {project.city ?? cityName(project.city_id)}
+                    </td>
                     <td className="p-4 text-sm text-muted-foreground hidden md:table-cell">
                       {project.developer ?? '—'}
                     </td>
@@ -227,7 +261,7 @@ export default function ProjectsPage() {
 
       <TablePagination meta={meta} page={page} onPageChange={setPage} />
 
-      <ProjectDialog project={dialogProject} onClose={() => setDialogProject(null)} />
+      <ProjectDialog project={dialogProject} cities={cities} onClose={() => setDialogProject(null)} />
 
       <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
         <AlertDialogContent>

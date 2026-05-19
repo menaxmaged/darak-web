@@ -1,11 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Pencil, Trash2, Loader2, MapPin, MoreHorizontal } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, Globe, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
@@ -14,79 +13,59 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
-import { useAreas, useCreateArea, useUpdateArea, useDeleteArea } from '@/Modules/areas/hooks';
-import { useCitiesAdmin } from '@/Modules/cities/hooks';
+import { useCitiesAdmin, useCreateCity, useUpdateCity, useDeleteCity } from '@/Modules/cities/hooks';
 import { TablePagination } from '@/components/ui/table-pagination';
-import type { Area, AreaInsert } from '@/Modules/areas/types';
-import type { City } from '@/Modules/cities/types';
+import type { City, CityInsert } from '@/Modules/cities/types';
 
 const PAGE_SIZE = 20;
 
 // ─── Form Dialog ──────────────────────────────────────────────────────────────
 
-function AreaDialog({ area, cities, onClose }: { area: Area | null | 'new'; cities: City[]; onClose: () => void }) {
-  const isNew = area === 'new';
-  const initial: AreaInsert = !isNew && area
-    ? { name: (area as Area).name, city_id: (area as Area).city_id }
-    : { name: '', city_id: '' };
+function CityDialog({ city, onClose }: { city: City | null | 'new'; onClose: () => void }) {
+  const isNew = city === 'new';
+  const initial: CityInsert = isNew ? { name: '' } : { name: (city as City)?.name ?? '' };
 
-  const [form, setForm] = useState<AreaInsert>(initial);
-  const createArea = useCreateArea();
-  const updateArea = useUpdateArea();
-  const isPending = createArea.isPending || updateArea.isPending;
+  const [form, setForm] = useState<CityInsert>(initial);
+  const createCity = useCreateCity();
+  const updateCity = useUpdateCity();
+  const isPending = createCity.isPending || updateCity.isPending;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name.trim() || !form.city_id) return;
+    if (!form.name.trim()) return;
     if (isNew) {
-      createArea.mutate(form, {
-        onSuccess: () => { toast.success('Area created'); onClose(); },
-        onError: () => toast.error('Failed to create area'),
+      createCity.mutate(form, {
+        onSuccess: () => { toast.success('City created'); onClose(); },
+        onError: () => toast.error('Failed to create city'),
       });
     } else {
-      updateArea.mutate(
-        { id: (area as Area).id, data: form },
+      updateCity.mutate(
+        { id: (city as City).id, data: form },
         {
-          onSuccess: () => { toast.success('Area updated'); onClose(); },
-          onError: () => toast.error('Failed to update area'),
+          onSuccess: () => { toast.success('City updated'); onClose(); },
+          onError: () => toast.error('Failed to update city'),
         }
       );
     }
   };
 
   return (
-    <Dialog open={!!area} onOpenChange={onClose}>
+    <Dialog open={!!city} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>{isNew ? 'New Area' : 'Edit Area'}</DialogTitle>
+          <DialogTitle>{isNew ? 'New City' : 'Edit City'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="area-name">Name</Label>
+            <Label htmlFor="city-name">Name</Label>
             <Input
-              id="area-name"
+              id="city-name"
               value={form.name}
-              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              placeholder="e.g. New Cairo"
+              onChange={(e) => setForm({ name: e.target.value })}
+              placeholder="e.g. Cairo"
               className="mt-1"
               required
             />
-          </div>
-          <div>
-            <Label htmlFor="area-city">City</Label>
-            <Select
-              value={form.city_id}
-              onValueChange={(v) => setForm((f) => ({ ...f, city_id: v }))}
-            >
-              <SelectTrigger id="area-city" className="mt-1">
-                <SelectValue placeholder="Select a city" />
-              </SelectTrigger>
-              <SelectContent>
-                {cities.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
           <DialogFooter className="pt-2">
             <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
@@ -103,31 +82,22 @@ function AreaDialog({ area, cities, onClose }: { area: Area | null | 'new'; citi
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function AreasPage() {
-  const [cityFilter, setCityFilter] = useState<string>('all');
-  const [dialogArea, setDialogArea] = useState<Area | null | 'new'>(null);
-  const [deleteTarget, setDeleteTarget] = useState<Area | null>(null);
+export default function CitiesPage() {
+  const [dialogCity, setDialogCity] = useState<City | null | 'new'>(null);
+  const [deleteTarget, setDeleteTarget] = useState<City | null>(null);
   const [page, setPage] = useState(1);
 
-  const setCity = (v: string) => { setCityFilter(v); setPage(1); };
+  const { data: citiesRes, isLoading } = useCitiesAdmin({ page, limit: PAGE_SIZE });
+  const deleteCity = useDeleteCity();
 
-  const { data: areasRes, isLoading } = useAreas(
-    cityFilter !== 'all' ? { city_id: cityFilter, page, limit: PAGE_SIZE } : { page, limit: PAGE_SIZE }
-  );
-  const { data: citiesRes } = useCitiesAdmin({ limit: 100 });
-  const deleteArea = useDeleteArea();
-
-  const areas = areasRes?.data ?? [];
-  const meta = areasRes?.meta;
-  const cities: City[] = citiesRes?.data ?? [];
-
-  const cityName = (city_id: string) => cities.find((c) => c.id === city_id)?.name ?? city_id;
+  const cities = citiesRes?.data ?? [];
+  const meta = citiesRes?.meta;
 
   const handleDelete = () => {
     if (!deleteTarget) return;
-    deleteArea.mutate(deleteTarget.id, {
-      onSuccess: () => { toast.success('Area deleted'); setDeleteTarget(null); },
-      onError: () => toast.error('Failed to delete area'),
+    deleteCity.mutate(deleteTarget.id, {
+      onSuccess: () => { toast.success('City deleted'); setDeleteTarget(null); },
+      onError: () => toast.error('Failed to delete city'),
     });
   };
 
@@ -135,24 +105,11 @@ export default function AreasPage() {
     <>
       {/* Toolbar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div className="flex items-center gap-3">
-          <p className="text-sm text-muted-foreground">
-            {isLoading ? '…' : (meta?.totalItems ?? areas.length)} area{(meta?.totalItems ?? areas.length) !== 1 ? 's' : ''}
-          </p>
-          <Select value={cityFilter} onValueChange={setCity}>
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="All cities" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All cities</SelectItem>
-              {cities.map((c) => (
-                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <Button onClick={() => setDialogArea('new')} className="gradient-primary">
-          <Plus className="h-4 w-4 mr-2" /> New Area
+        <p className="text-sm text-muted-foreground">
+          {isLoading ? '…' : (meta?.totalItems ?? cities.length)} cit{(meta?.totalItems ?? cities.length) !== 1 ? 'ies' : 'y'}
+        </p>
+        <Button onClick={() => setDialogCity('new')} className="gradient-primary">
+          <Plus className="h-4 w-4 mr-2" /> New City
         </Button>
       </div>
 
@@ -163,27 +120,23 @@ export default function AreasPage() {
             <Skeleton key={i} className="h-14 rounded-xl" />
           ))}
         </div>
-      ) : areas.length > 0 ? (
+      ) : cities.length > 0 ? (
         <div className="bg-card rounded-xl border border-border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-secondary">
                 <tr>
                   <th className="text-left p-4 text-sm font-medium">Name</th>
-                  <th className="text-left p-4 text-sm font-medium">City</th>
                   <th className="text-left p-4 text-sm font-medium hidden sm:table-cell">Created</th>
                   <th className="p-4 text-sm font-medium text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {areas.map((area) => (
-                  <tr key={area.id} className="border-t border-border hover:bg-secondary/40 transition-colors">
-                    <td className="p-4 font-medium text-sm">{area.name}</td>
-                    <td className="p-4 text-sm text-muted-foreground">
-                      {area.city ?? cityName(area.city_id)}
-                    </td>
+                {cities.map((city) => (
+                  <tr key={city.id} className="border-t border-border hover:bg-secondary/40 transition-colors">
+                    <td className="p-4 font-medium text-sm">{city.name}</td>
                     <td className="p-4 text-sm text-muted-foreground hidden sm:table-cell">
-                      {new Date(area.created_at).toLocaleDateString()}
+                      {new Date(city.created_at).toLocaleDateString()}
                     </td>
                     <td className="p-4 text-right">
                       <DropdownMenu>
@@ -197,13 +150,13 @@ export default function AreasPage() {
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
-                            onClick={() => setDialogArea(area)}
+                            onClick={() => setDialogCity(city)}
                             className="rounded-xl cursor-pointer"
                           >
                             <Pencil className="mr-2 h-4 w-4" /> Edit
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onClick={() => setDeleteTarget(area)}
+                            onClick={() => setDeleteTarget(city)}
                             className="rounded-xl cursor-pointer text-destructive focus:text-destructive"
                           >
                             <Trash2 className="mr-2 h-4 w-4" /> Delete
@@ -219,22 +172,22 @@ export default function AreasPage() {
         </div>
       ) : (
         <div className="text-center py-16 bg-secondary/40 rounded-xl">
-          <MapPin className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-          <p className="text-muted-foreground">No areas found.</p>
-          <Button className="mt-4 gradient-primary" onClick={() => setDialogArea('new')}>
-            <Plus className="h-4 w-4 mr-2" /> Add first area
+          <Globe className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+          <p className="text-muted-foreground">No cities found.</p>
+          <Button className="mt-4 gradient-primary" onClick={() => setDialogCity('new')}>
+            <Plus className="h-4 w-4 mr-2" /> Add first city
           </Button>
         </div>
       )}
 
       <TablePagination meta={meta} page={page} onPageChange={setPage} />
 
-      <AreaDialog area={dialogArea} cities={cities} onClose={() => setDialogArea(null)} />
+      <CityDialog city={dialogCity} onClose={() => setDialogCity(null)} />
 
       <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete area?</AlertDialogTitle>
+            <AlertDialogTitle>Delete city?</AlertDialogTitle>
             <AlertDialogDescription>
               <strong>{deleteTarget?.name}</strong> will be permanently removed. This cannot be undone.
             </AlertDialogDescription>
@@ -245,7 +198,7 @@ export default function AreasPage() {
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {deleteArea.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Delete'}
+              {deleteCity.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Delete'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
