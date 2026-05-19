@@ -13,6 +13,8 @@ import { toast } from "sonner";
 import { ArrowLeft, ArrowRight, Send } from "lucide-react";
 import { calculateInstallment } from "@/lib/constants";
 import type { Listing } from "@/Modules/listings/types";
+import type { WizardData } from "./wizard-types";
+export type { WizardData };
 
 const STEPS = [
   { title: "Basic Info", description: "Property type & location" },
@@ -21,39 +23,6 @@ const STEPS = [
   { title: "Media", description: "Photos & contact" },
 ];
 
-export interface WizardData {
-  // Step 1
-  title: string;
-  description: string;
-  property_type: string;
-  property_status: string;
-  city: string;
-  area_id: string;
-  project_id: string;
-  address: string;
-  // Step 2
-  price: string;
-  is_cash_only: boolean;
-  down_payment_amount: string;
-  installment_years: string;
-  // Step 3
-  built_up_area: string;
-  land_area: string;
-  bedrooms: string;
-  bathrooms: string;
-  floor: string;
-  finishing: string;
-  delivery_year: string;
-  view: string;
-  // Step 4
-  imageFiles: File[];   // raw files — sent via FormData on create, uploaded on edit
-  images: string[];     // existing URL strings from backend (edit mode)
-  video_url: string;
-  tour_url: string;
-  contact_name: string;
-  contact_phone: string;
-  contact_whatsapp: string;
-}
 
 const emptyData: WizardData = {
   title: "",

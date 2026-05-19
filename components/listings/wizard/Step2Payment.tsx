@@ -3,15 +3,11 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatPriceEGP, calculateInstallment } from "@/lib/constants";
+import type { WizardData, WizardOnChange } from "./wizard-types";
 
 interface Step2Props {
-  data: {
-    price: string;
-    is_cash_only: boolean;
-    down_payment_amount: string;
-    installment_years: string;
-  };
-  onChange: (field: string, value: string | boolean) => void;
+  data: WizardData;
+  onChange: WizardOnChange;
 }
 
 export function Step2Payment({ data, onChange }: Step2Props) {

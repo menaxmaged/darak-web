@@ -1,33 +1,10 @@
 import { PROPERTY_TYPES, FINISHING_TYPES, FLOOR_TYPES, VIEW_TYPES, formatPriceEGP, calculateInstallment } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, BedDouble, Bath, Maximize, Calendar, Phone, MessageCircle } from "lucide-react";
+import type { WizardData } from "./wizard-types";
 
 interface ListingPreviewProps {
-  data: {
-    title: string;
-    description: string;
-    property_type: string;
-    property_status: string;
-    city: string;
-    area_id: string;
-    project_id: string;
-    price: string;
-    is_cash_only: boolean;
-    down_payment_amount: string;
-    installment_years: string;
-    built_up_area: string;
-    land_area: string;
-    bedrooms: string;
-    bathrooms: string;
-    floor: string;
-    finishing: string;
-    delivery_year: string;
-    view: string;
-    images: string[];
-    contact_name: string;
-    contact_phone: string;
-    contact_whatsapp: string;
-  };
+  data: WizardData;
   previewImages?: string[];
   areaName?: string;
   projectName?: string;

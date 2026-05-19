@@ -1,17 +1,15 @@
 
 import  Link from "next/link";
+import Image from "next/image";
 export function Footer() {
   return (
     <footer className="bg-foreground text-background py-16">
       <div className="container-custom">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">D</span>
-              </div>
-              <span className="font-display font-bold text-xl">LVN</span>
-            </Link>
+                     <Link href="/" className="flex items-center gap-2">
+            <Image src="/logo.png" alt="LVN Logo" width={52} height={52} />
+          </Link>
             <p className="text-muted-foreground text-sm">
               Egypt's premium real estate marketplace for buying properties.
             </p>

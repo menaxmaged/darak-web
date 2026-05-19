@@ -3,19 +3,12 @@ import { Label } from "@/components/ui/label";
 import { Upload, X } from "lucide-react";
 import { useUploadListingImages } from "@/Modules/listings/hooks";
 import { toast } from "sonner";
+import type { WizardData, WizardOnChange } from "./wizard-types";
 
 interface Step4Props {
-  data: {
-    imageFiles: File[];
-    images: string[];
-    video_url: string;
-    tour_url: string;
-    contact_name: string;
-    contact_phone: string;
-    contact_whatsapp: string;
-  };
+  data: WizardData;
   isEdit?: boolean;
-  onChange: (field: string, value: string | string[] | File[]) => void;
+  onChange: WizardOnChange;
 }
 
 export function Step4Media({ data, isEdit = false, onChange }: Step4Props) {

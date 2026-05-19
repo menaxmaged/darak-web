@@ -6,19 +6,11 @@ import { PROPERTY_TYPES } from "@/lib/constants";
 import { useAreas } from "@/Modules/areas/areas";
 import { useCities } from "@/Modules/areas/hooks";
 import { useProjects } from "@/Modules/projects/hooks";
+import type { WizardData, WizardOnChange } from "./wizard-types";
 
 interface Step1Props {
-  data: {
-    title: string;
-    description: string;
-    property_type: string;
-    property_status: string;
-    city: string;
-    area_id: string;
-    project_id: string;
-    address: string;
-  };
-  onChange: (field: string, value: string) => void;
+  data: WizardData;
+  onChange: WizardOnChange;
 }
 
 export function Step1BasicInfo({ data, onChange }: Step1Props) {

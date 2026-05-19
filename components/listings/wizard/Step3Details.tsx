@@ -2,24 +2,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FINISHING_TYPES, FLOOR_TYPES, VIEW_TYPES, DELIVERY_YEARS } from "@/lib/constants";
+import type { WizardData, WizardOnChange } from "./wizard-types";
 
 interface Step3Props {
-  data: {
-    built_up_area: string;
-    land_area: string;
-    bedrooms: string;
-    bathrooms: string;
-    floor: string;
-    finishing: string;
-    delivery_year: string;
-    view: string;
-    property_status: string;
-  };
-  onChange: (field: string, value: string) => void;
+  data: WizardData;
+  onChange: WizardOnChange;
 }
+
+const COMMERCIAL_TYPES = ["office", "retail", "clinic", "warehouse"];
 
 export function Step3Details({ data, onChange }: Step3Props) {
   const isOffplan = data.property_status === "offplan";
+  const isCommercial = COMMERCIAL_TYPES.includes(data.property_type);
 
   return (
     <div className="space-y-6">
@@ -40,20 +34,20 @@ export function Step3Details({ data, onChange }: Step3Props) {
             onChange={(e) => onChange("built_up_area", e.target.value)}
           />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="land_area">Land Area (m²)</Label>
-          <Input
-            id="land_area"
-            type="number"
-            placeholder="For villas, townhouses (optional)"
-            value={data.land_area}
-            onChange={(e) => onChange("land_area", e.target.value)}
-          />
-        </div>
-      </div>
+        {!isCommercial && (
+          <>          
+          <div className="space-y-2">
+            <Label htmlFor="land_area">Land Area (m²)</Label>
+            <Input
+              id="land_area"
+              type="number"
+              placeholder="For villas, townhouses (optional)"
+              value={data.land_area}
+              onChange={(e) => onChange("land_area", e.target.value)}
+            />
+          </div>
+       
 
-      {/* Rooms */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="bedrooms">Bedrooms *</Label>
           <Select value={data.bedrooms} onValueChange={(v) => onChange("bedrooms", v)}>
@@ -87,10 +81,7 @@ export function Step3Details({ data, onChange }: Step3Props) {
             </SelectContent>
           </Select>
         </div>
-      </div>
-
-      {/* Floor & Finishing */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    
         <div className="space-y-2">
           <Label>Floor</Label>
           <Select value={data.floor} onValueChange={(v) => onChange("floor", v)}>
@@ -104,7 +95,23 @@ export function Step3Details({ data, onChange }: Step3Props) {
             </SelectContent>
           </Select>
         </div>
-        <div className="space-y-2">
+  
+             <div className="space-y-2">
+          <Label>View</Label>
+          <Select value={data.view} onValueChange={(v) => onChange("view", v)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select view" />
+            </SelectTrigger>
+            <SelectContent>
+              {VIEW_TYPES.map((v) => (
+                <SelectItem key={v.value} value={v.value}>{v.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+              </>
+   )}
+      <div className="space-y-2">
           <Label>Finishing *</Label>
           <Select value={data.finishing} onValueChange={(v) => onChange("finishing", v)}>
             <SelectTrigger>
@@ -117,10 +124,6 @@ export function Step3Details({ data, onChange }: Step3Props) {
             </SelectContent>
           </Select>
         </div>
-      </div>
-
-      {/* Delivery & View */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>Delivery</Label>
           {isOffplan ? (
@@ -140,19 +143,7 @@ export function Step3Details({ data, onChange }: Step3Props) {
             </div>
           )}
         </div>
-        <div className="space-y-2">
-          <Label>View</Label>
-          <Select value={data.view} onValueChange={(v) => onChange("view", v)}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select view" />
-            </SelectTrigger>
-            <SelectContent>
-              {VIEW_TYPES.map((v) => (
-                <SelectItem key={v.value} value={v.value}>{v.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+   
       </div>
     </div>
   );

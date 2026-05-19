@@ -26,10 +26,17 @@ export interface Listing {
   is_cash_only: boolean;
   created_at: string;
   updated_at: string;
+   video_url: string;
+  tour_url: string;
+  contact_name: string;
+  contact_phone: string;
+  contact_whatsapp: string;
   Advertiser: { id: number; firstName: string; lastName: string; email: string; phone: string };
   Area: { id: number; name: string; city: string } | null;
   Project: { id: number; name: string; developer: string; city: string } | null;
 }
+
+
 
 export type ListingInsert = {
   property_status: string;
