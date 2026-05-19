@@ -180,7 +180,7 @@ export default function ActivateAccountPage() {
         <div className="absolute inset-0 z-20 flex items-center justify-center p-12">
           <div className="text-center text-white">
             <h2 className="font-display text-4xl font-bold mb-4">
-              One step away from Darak
+              One step away from LVN
             </h2>
             <p className="text-lg opacity-80 max-w-md leading-relaxed">
               Verify your email to start listing properties across Egypt.

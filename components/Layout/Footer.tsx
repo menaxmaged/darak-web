@@ -10,7 +10,7 @@ export function Footer() {
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                 <span className="text-primary-foreground font-bold text-lg">D</span>
               </div>
-              <span className="font-display font-bold text-xl">Darak</span>
+              <span className="font-display font-bold text-xl">LVN</span>
             </Link>
             <p className="text-muted-foreground text-sm">
               Egypt's premium real estate marketplace for buying properties.
@@ -40,14 +40,14 @@ export function Footer() {
             <h4 className="font-semibold mb-4">Contact</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>Cairo, Egypt</li>
-              <li>info@darak.eg</li>
+              <li>info@LVN.eg</li>
               <li>+20 100 000 0000</li>
             </ul>
           </div>
         </div>
         
         <div className="border-t border-muted-foreground/20 mt-12 pt-8 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Darak. All rights reserved.
+          © {new Date().getFullYear()} LVN. All rights reserved.
         </div>
       </div>
     </footer>

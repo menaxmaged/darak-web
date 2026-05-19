@@ -59,7 +59,7 @@ export default function HomePage() {
           >
             <h1 className="font-display text-4xl md:text-6xl font-bold mb-6 leading-tight">
               Find Your Dream
-              <span className="text-gradient block">Property in Egypt</span>
+              <span className="text-gradient hidden">Property in Egypt</span>
             </h1>
             <p className="text-lg md:text-xl opacity-80 mb-8 max-w-xl">
               Discover ready-to-move and off-plan properties across Egypt's prime locations.
@@ -238,7 +238,7 @@ export default function HomePage() {
             Ready to List Your Property?
           </h2>
           <p className="text-lg opacity-80 mb-8 max-w-xl mx-auto">
-            Join thousands of brokers and owners selling properties on Darak.
+            Join thousands of brokers and owners selling properties on LVN.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={() => router.push("/auth?mode=signup")}>

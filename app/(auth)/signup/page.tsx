@@ -226,7 +226,7 @@ export default function SignupPage() {
             </div>
 
             {/* Date of birth & Gender */}
-            <div className="grid grid-cols-2 gap-3">
+            {/* <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label htmlFor="dateOfBirth">
                   Date of Birth <span className="text-muted-foreground text-xs">(optional)</span>
@@ -257,7 +257,7 @@ export default function SignupPage() {
                   </SelectContent>
                 </Select>
               </div>
-            </div>
+            </div> */}
 
             {/* Password */}
             <div>
@@ -325,7 +325,7 @@ export default function SignupPage() {
         <div className="absolute inset-0 z-20 flex items-center justify-center p-12">
           <div className="text-center text-white">
             <h2 className="font-display text-4xl font-bold mb-4">
-              Join thousands of sellers on Darak
+              Join thousands of sellers on LVN
             </h2>
             <p className="text-lg opacity-80 max-w-md leading-relaxed">
               Reach buyers looking for properties across Egypt. List for free today.

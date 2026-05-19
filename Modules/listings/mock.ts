@@ -2,10 +2,10 @@ import type { Listing } from './types';
 import { buildListResult, mockSuccess } from '@/lib/mocks/mock-helpers';
 
 const ADVERTISERS = {
-  a2: { id: 2, firstName: 'Ahmed', lastName: 'Hassan', email: 'ahmed@darak.com', phone: '+201001234567' },
-  a3: { id: 3, firstName: 'Sara',  lastName: 'Ali',    email: 'sara@darak.com',  phone: '+201112345678' },
-  a4: { id: 4, firstName: 'Omar',  lastName: 'Khaled', email: 'omar@darak.com',  phone: '+201223456789' },
-  a5: { id: 5, firstName: 'Nour',  lastName: 'Samir',  email: 'nour@darak.com',  phone: '+201334567890' },
+  a2: { id: 2, firstName: 'Ahmed', lastName: 'Hassan', email: 'ahmed@LVN.com', phone: '+201001234567' },
+  a3: { id: 3, firstName: 'Sara',  lastName: 'Ali',    email: 'sara@LVN.com',  phone: '+201112345678' },
+  a4: { id: 4, firstName: 'Omar',  lastName: 'Khaled', email: 'omar@LVN.com',  phone: '+201223456789' },
+  a5: { id: 5, firstName: 'Nour',  lastName: 'Samir',  email: 'nour@LVN.com',  phone: '+201334567890' },
 };
 
 const mockListings: Listing[] = [

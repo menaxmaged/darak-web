@@ -180,6 +180,9 @@ function PropertyDetail({ listing }: { listing: Listing }) {
               Property Details
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            {listing.property_type && (
+                <SpecItem icon={Home} label="Type" value={label(listing.property_type)} />
+              )}
               {listing.bedrooms > 0 && (
                 <SpecItem icon={Bed} label="Bedrooms" value={listing.bedrooms} />
               )}
@@ -188,9 +191,7 @@ function PropertyDetail({ listing }: { listing: Listing }) {
               {listing.finishing && (
                 <SpecItem icon={Layers} label="Finishing" value={label(listing.finishing)} />
               )}
-              {listing.property_type && (
-                <SpecItem icon={Home} label="Type" value={label(listing.property_type)} />
-              )}
+
               {listing.delivery_year && (
                 <SpecItem icon={Calendar} label="Delivery" value={listing.delivery_year} />
               )}
@@ -247,7 +248,7 @@ function PropertyDetail({ listing }: { listing: Listing }) {
               <p className="font-display font-bold text-3xl text-primary mb-1">
                 {formatPriceEGP(listing.price)}
               </p>
-              {listing.is_cash_only ? (
+              {/* {listing.is_cash_only ? (
                 <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                   <Tag className="w-3.5 h-3.5" /> Cash only
                 </span>
@@ -270,7 +271,7 @@ function PropertyDetail({ listing }: { listing: Listing }) {
                   <Building2 className="w-4 h-4 shrink-0" />
                   <span>{listing.city}{listing.Area?.name ? `, ${listing.Area.name}` : ''}</span>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             {/* Contact */}
@@ -280,7 +281,7 @@ function PropertyDetail({ listing }: { listing: Listing }) {
                 href={`tel:${listing.Advertiser.phone}`}
                 className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-border hover:bg-secondary transition-colors text-sm font-medium"
               >
-                <Phone className="w-4 h-4" /> Call Agent
+                <Phone className="w-4 h-4" /> Call
               </a>
               <a
                 href={`https://wa.me/${listing.Advertiser.phone}`}

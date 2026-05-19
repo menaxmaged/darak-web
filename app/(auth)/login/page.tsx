@@ -167,7 +167,7 @@ export default function LoginPage() {
         <div className="absolute inset-0 z-20 flex items-center justify-center p-12">
           <div className="text-center text-white">
             <h2 className="font-display text-4xl font-bold mb-4">
-              List your property with Darak
+              List your property with LVN
             </h2>
             <p className="text-lg opacity-80 max-w-md leading-relaxed">
               Reach thousands of buyers looking for properties across Egypt.
