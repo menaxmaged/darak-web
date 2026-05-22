@@ -18,6 +18,7 @@ import { formatPriceEGP, PROPERTY_TYPES } from '@/lib/constants';
 import type { Listing, ListingStatus } from '@/Modules/listings/types';
 import { TablePagination } from '@/components/ui/table-pagination';
 import Link from 'next/link';
+import { buildPropertySlug } from '@/lib/slug';
 
 const PAGE_SIZE = 20;
 const FALLBACK = 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80';
@@ -120,7 +121,7 @@ function ReviewDialog({ listing, onClose }: { listing: Listing | null; onClose: 
 
               {/* Top-right: external link (the built-in × sits here too) */}
               <Link
-                href={`/property/${listing.id}`}
+                href={`/property/${buildPropertySlug(listing)}`}
                 target="_blank"
                 className="absolute top-3.5 right-12 h-7 w-7 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 transition-colors"
               >
@@ -466,7 +467,7 @@ export default function ListingsPage() {
                             View Details
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild className="rounded-xl cursor-pointer">
-                            <Link href={`/property/${listing.id}`} target="_blank">
+                            <Link href={`/property/${buildPropertySlug(listing)}`} target="_blank">
                               <ExternalLink className="mr-2 h-4 w-4" />
                               Public Page
                             </Link>

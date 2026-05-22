@@ -1,7 +1,8 @@
 'use client';
 
-import { use, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   MapPin, Bed, Bath, Maximize, ArrowLeft, ChevronLeft, ChevronRight,
   Phone, MessageCircle, Calendar, CheckCircle, Clock, Tag,
@@ -10,6 +11,7 @@ import {
 import { useListing } from '@/Modules/listings/hooks';
 import { formatPriceEGP } from '@/lib/constants';
 import { Skeleton } from '@/components/ui/skeleton';
+import { buildPropertySlug, parseListingId } from '@/lib/slug';
 import type { Listing } from '@/Modules/listings/types';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -134,7 +136,7 @@ function PropertyDetail({ listing }: { listing: Listing }) {
     : null;
 
   return (
-    <div className="container-custom py-8">
+    <div className="container-custom pt-8 pb-28 lg:pb-8">
       {/* Back */}
       <Link
         href="/"
@@ -274,8 +276,8 @@ function PropertyDetail({ listing }: { listing: Listing }) {
               </div> */}
             </div>
 
-            {/* Contact */}
-            <div className="border border-border rounded-2xl p-5 space-y-3">
+            {/* Contact — desktop sidebar card */}
+            <div className="hidden lg:block border border-border rounded-2xl p-5 space-y-3">
               <p className="font-semibold text-sm">Interested in this property?</p>
               <a
                 href={`tel:${listing.contact_phone}`}
@@ -295,16 +297,48 @@ function PropertyDetail({ listing }: { listing: Listing }) {
           </div>
         </div>
       </div>
+
+      {/* Contact — mobile fixed bottom bar */}
+      <div
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-40 flex gap-3 border-t border-border bg-background px-4 py-5"
+        style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}
+      >
+        <a
+          href={`tel:${listing.contact_phone}`}
+          className="flex flex-1 items-center justify-center gap-2 py-2.5 rounded-xl border border-border hover:bg-secondary transition-colors text-sm font-medium"
+        >
+          <Phone className="w-6 h-6" /> Call
+        </a>
+        <a
+          href={`https://wa.me/${listing.contact_whatsapp}?text=I'm%20interested%20in%20the%20property%20${encodeURIComponent(listing.title ?? '')}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex flex-1 items-center justify-center gap-2 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white transition-colors text-sm font-medium"
+        >
+          <MessageCircle className="w-6 h-6" /> WhatsApp
+        </a>
+      </div>
     </div>
   );
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function PropertyPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
-  const { data, isLoading } = useListing(id);
+export default function PropertyPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = use(params);
+  const router = useRouter();
+  const id = parseListingId(slug);
+  const { data, isLoading } = useListing(id ?? undefined);
   const listing = data?.data;
+
+  // Keep the URL canonical: redirect bare-id or stale-slug URLs to `slug-id`.
+  useEffect(() => {
+    if (!listing) return;
+    const canonical = buildPropertySlug(listing);
+    if (slug !== canonical) {
+      router.replace(`/property/${canonical}`);
+    }
+  }, [listing, slug, router]);
 
   if (isLoading) return <PropertySkeleton />;
 

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MapPin, Bed, Bath, Maximize, Home, Building2, LandPlot } from "lucide-react";
 import { formatPriceEGP } from "@/lib/constants";
+import { buildPropertySlug } from "@/lib/slug";
 import type { Listing } from "@/Modules/listings/listings";
 
 interface ListingCardProps {
@@ -32,7 +33,7 @@ export function ListingCard({ listing }: ListingCardProps) {
     : `${process.env.NEXT_PUBLIC_API_URL}${imageUrl}`;
  
   return (
-    <Link href={`/property/${listing.id}`} className="card-listing group flex flex-col h-full">
+    <Link href={`/property/${buildPropertySlug(listing)}`} className="card-listing group flex flex-col h-full">
       <div className="relative aspect-[4/3] overflow-hidden shrink-0">
         <img
           src={mainImage}
