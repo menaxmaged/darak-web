@@ -4,6 +4,8 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { tokenManager } from '@/lib/api-client';
 import type { LoginResponse } from '@/Modules/auth/types';
+import { authApi } from '@/Modules/auth/api';
+
 
 interface AuthContextType {
   user: LoginResponse['user'] | null;
@@ -24,20 +26,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    // Check for existing session on mount
-    const initAuth = () => {
+    const initAuth = async () => {
       const token = tokenManager.get();
-      const storedUser = localStorage.getItem('user');
-
-      if (token && storedUser) {
+      if (token) {
         try {
-          const parsedUser = JSON.parse(storedUser);
-          setUser(parsedUser);
-        } catch (error) {
-          console.error('Failed to parse stored user:', error);
+          const freshUser = await authApi.checkAuth();
+          // console.log('Checked auth on init, got user:', freshUser);
+          if (freshUser) {
+            setUser(freshUser);
+          } else {
+            tokenManager.remove();
+          }
+        } catch {
           tokenManager.remove();
-          localStorage.removeItem('role');
-          localStorage.removeItem('user');
         }
       }
       setIsLoading(false);
@@ -47,24 +48,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = (data: LoginResponse) => {
+    console.log('Logging in user:', data);
     setUser(data.user);
-    localStorage.setItem('user', JSON.stringify(data.user));
-    localStorage.setItem('role', data.user.role);
-    tokenManager.set(data.token);
+     tokenManager.set(data.token? data.token : '');
+    
   };
 
   const logout = () => {
     setUser(null);
     tokenManager.remove();
-    localStorage.removeItem('role');
-    localStorage.removeItem('user');
     router.push('/login');
   };
 
   const updateUser = (updatedUser: LoginResponse['user']) => {
     setUser(updatedUser);
-    localStorage.setItem('user', JSON.stringify(updatedUser));
-    localStorage.setItem('role', updatedUser.role);
   };
 
   const hasRole = (role: string | string[]): boolean => {
@@ -75,14 +72,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshUser = async () => {
     try {
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        const parsedUser = JSON.parse(storedUser) as LoginResponse['user'];
-        setUser(parsedUser);
-        localStorage.setItem('role', parsedUser.role);
+      const freshUser = await authApi.checkAuth();
+      if (freshUser) {
+        setUser(freshUser);
+      } else {
+        logout();
       }
-    } catch (error) {
-      console.error('Failed to refresh user:', error);
+    } catch {
+      logout();
     }
   };
 

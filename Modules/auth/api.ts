@@ -7,6 +7,11 @@ export const authApi = {
     return response.data;
   },
 
+    checkAuth: async (): Promise<LoginResponse['user'] | null> => {
+    const response = await apiClient.get<{ authorized: boolean; user: LoginResponse['user'] }>('/auth/check');
+    return response.data?.authorized ? response.data.user : null;
+  },
+
   register: async (data: {
     firstName: string;
     lastName: string;
