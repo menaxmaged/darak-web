@@ -115,6 +115,10 @@ export function ListingWizard({ onClose, listing }: ListingWizardProps) {
     setData(prev => ({ ...prev, [field]: value }));
   };
 
+  const COMMERCIAL_TYPES = ["office", "retail", "clinic", "warehouse"];
+  const isCommercial = COMMERCIAL_TYPES.includes(data.property_type);
+
+
   const validateStep = (step: number): boolean => {
     switch (step) {
       case 1:
@@ -134,9 +138,20 @@ export function ListingWizard({ onClose, listing }: ListingWizardProps) {
         }
         return true;
       case 3:
+          if (!isCommercial) {
         if (!data.built_up_area || !data.bedrooms || !data.bathrooms || !data.finishing) {
           toast.error("Please fill in all required property details");
           return false;
+        }}else{
+          if (!data.built_up_area  || !data.finishing) {
+            console.log("Missing fields:", {
+              built_up_area: data.built_up_area,
+              bathrooms: data.bathrooms,
+              finishing: data.finishing,
+            });
+            toast.error("Please fill in all required property details");
+            return false;
+          }
         }
         return true;
       case 4:
@@ -213,6 +228,7 @@ export function ListingWizard({ onClose, listing }: ListingWizardProps) {
         });
         toast.success("Listing updated successfully!");
       } else {
+        console.log("Submitting listing with data:", baseBody, "and files:", data.imageFiles);
         // Create: send all fields + files in one multipart request
         await createListing.mutateAsync({ data: baseBody, files: data.imageFiles });
         toast.success("Listing submitted for approval!");

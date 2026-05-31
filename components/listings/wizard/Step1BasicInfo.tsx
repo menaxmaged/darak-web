@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PROPERTY_TYPES } from "@/lib/constants";
 import { useAreas } from "@/Modules/areas/areas";
-import { useCities } from "@/Modules/areas/hooks";
+import { useCitiesAdmin } from "@/Modules/cities/hooks";
 import { useProjects } from "@/Modules/projects/hooks";
 import type { WizardData, WizardOnChange } from "./wizard-types";
 
@@ -14,7 +14,7 @@ interface Step1Props {
 }
 
 export function Step1BasicInfo({ data, onChange }: Step1Props) {
-  const { data: citiesRes } = useCities();
+  const { data: citiesRes } = useCitiesAdmin({ limit: 100 });
   const cities = citiesRes?.data ?? [];
 
   const { data: areasRes } = useAreas({ city: data.city });
@@ -99,7 +99,7 @@ export function Step1BasicInfo({ data, onChange }: Step1Props) {
             </SelectTrigger>
             <SelectContent>
               {cities.map((city) => (
-                <SelectItem key={city} value={city}>{city}</SelectItem>
+                <SelectItem key={city.id} value={city.name}>{city.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>

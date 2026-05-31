@@ -29,7 +29,6 @@ export const listingApi = {
   },
 
   create: async ({ data, files }: { data: ListingInsert; files: File[] }) => {
-    return withMock(async () => {
       const form = new FormData();
       const append = (key: string, value: string | number | boolean | undefined | null) => {
         if (value !== undefined && value !== null) form.append(key, String(value));
@@ -51,9 +50,28 @@ export const listingApi = {
       append('installment_years', data.installment_years);
       if (data.is_cash_only !== undefined) form.append('is_cash_only', String(data.is_cash_only));
       files.forEach((f) => form.append('images', f));
-      const response = await apiFormData.postAuto('/admin/listings', form);
+      console.log('Submitting form data for listing creation:', {
+        property_status: data.property_status,
+        property_type: data.property_type,
+        city: data.city,
+        price: data.price,
+        built_up_area: data.built_up_area,
+        bedrooms: data.bedrooms,
+        bathrooms: data.bathrooms,
+        area_id: data.area_id,
+        project_id: data.project_id,
+        title: data.title,
+        description: data.description,
+        finishing: data.finishing,
+        delivery_year: data.delivery_year,
+        down_payment_amount: data.down_payment_amount,
+        installment_years: data.installment_years,
+        is_cash_only: data.is_cash_only,
+        files_count: files.length,
+      });
+      const response = await apiFormData.post('/admin/listings', form);
+      console.log('API response for listing creation:', response);
       return response.data;
-    }, mockListingSuccess);
   },
 
   update: async ({ id, data }: { id: string; data: ListingUpdate }) => {
