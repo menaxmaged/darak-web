@@ -15,7 +15,7 @@ export function ListingPreview({ data, previewImages, areaName, projectName }: L
     img.startsWith('http://') || img.startsWith('https://') ? img : `${process.env.NEXT_PUBLIC_API_URL}${img}`
   );
   const allImages = (previewImages ?? data.images).map(img => 
-    `${process.env.NEXT_PUBLIC_API_URL}${img}`
+img
   );
   console.log("Preview images:", allImagess);
   const price = Number(data.price) || 0;
