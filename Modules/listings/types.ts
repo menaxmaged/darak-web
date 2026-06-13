@@ -41,7 +41,7 @@ export interface Listing {
 export type ListingInsert = {
   property_status: string;
   property_type: string;
-  city: string;
+  city_id?: string;
   price: number;
   built_up_area: number;
   bedrooms: number;
@@ -50,12 +50,21 @@ export type ListingInsert = {
   project_id?: number | null;
   title?: string;
   description?: string;
+  address?: string;
   finishing?: string;
   delivery_year?: number;
   down_payment_amount?: number;
   installment_years?: number;
   is_cash_only?: boolean;
   images?: string[];
+  video_url?: string;
+  tour_url?: string;
+  contact_name?: string;
+  contact_phone?: string;
+  contact_whatsapp?: string;
+  land_area?: number;
+  floor?: number;
+  view?: string;
 };
 
 export type ListingUpdate = Partial<ListingInsert>;

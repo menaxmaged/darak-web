@@ -195,7 +195,7 @@ export function ListingWizard({ onClose, listing }: ListingWizardProps) {
     const baseBody = {
       property_type: data.property_type,
       property_status: data.property_status,
-      city: data.city,
+      city_id: data.city,
       price,
       built_up_area: Number(data.built_up_area),
       bedrooms: Number(data.bedrooms),
@@ -204,6 +204,7 @@ export function ListingWizard({ onClose, listing }: ListingWizardProps) {
       project_id: projectId,
       title: data.title || undefined,
       description: data.description || undefined,
+      address: data.address || undefined,
       finishing: data.finishing || undefined,
       delivery_year: data.property_status === "offplan" && data.delivery_year
         ? Number(data.delivery_year.replace("+", ""))
@@ -212,6 +213,15 @@ export function ListingWizard({ onClose, listing }: ListingWizardProps) {
       down_payment_amount: data.is_cash_only ? undefined : downPaymentPercent || undefined,
       installment_years: data.is_cash_only ? undefined : years || undefined,
       installment_amount: data.is_cash_only ? undefined : calculateInstallment(price, downPaymentPercent, years, "monthly"),
+      video_url: data.video_url || undefined,
+      tour_url: data.tour_url || undefined,
+      contact_name: data.contact_name || undefined,
+      contact_phone: data.contact_phone || undefined,
+      contact_whatsapp: data.contact_whatsapp || undefined,
+      land_area: data.land_area ? Number(data.land_area) : undefined,
+      floor: data.floor ? Number(data.floor) : undefined,
+      view: data.view || undefined,
+
     };
 
     try {
@@ -228,7 +238,7 @@ export function ListingWizard({ onClose, listing }: ListingWizardProps) {
         });
         toast.success("Listing updated successfully!");
       } else {
-        console.log("Submitting listing with data:", baseBody, "and files:", data.imageFiles);
+   //    console.log("Submitting listing with data:", baseBody, "and files:", data.imageFiles);
         // Create: send all fields + files in one multipart request
         await createListing.mutateAsync({ data: baseBody, files: data.imageFiles });
         toast.success("Listing submitted for approval!");
