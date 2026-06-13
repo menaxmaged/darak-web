@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import { ArrowLeft, ArrowRight, Send } from "lucide-react";
 import { calculateInstallment } from "@/lib/constants";
 import type { Listing } from "@/Modules/listings/types";
-import type { WizardData } from "./wizard-types";
+import { COMMERCIAL_TYPES, type WizardData } from "./wizard-types";
 export type { WizardData };
 
 const STEPS = [
@@ -86,12 +86,7 @@ function listingToWizardData(listing: Listing): WizardData {
   };
 }
 
-interface ListingWizardProps {
-  onClose: () => void;
-  listing?: Listing;
-}
-
-export function ListingWizard({ onClose, listing }: ListingWizardProps) {
+export function ListingWizard({ onClose, listing }: { onClose: () => void; listing?: Listing }) {
   const isEdit = !!listing;
   const [currentStep, setCurrentStep] = useState(1);
   const [data, setData] = useState<WizardData>(isEdit ? listingToWizardData(listing) : emptyData);
@@ -115,8 +110,7 @@ export function ListingWizard({ onClose, listing }: ListingWizardProps) {
     setData(prev => ({ ...prev, [field]: value }));
   };
 
-  const COMMERCIAL_TYPES = ["office", "retail", "clinic", "warehouse"];
-  const isCommercial = COMMERCIAL_TYPES.includes(data.property_type);
+  const isCommercial = COMMERCIAL_TYPES.includes(data.property_type as typeof COMMERCIAL_TYPES[number]);
 
 
   const validateStep = (step: number): boolean => {
@@ -138,17 +132,13 @@ export function ListingWizard({ onClose, listing }: ListingWizardProps) {
         }
         return true;
       case 3:
-          if (!isCommercial) {
-        if (!data.built_up_area || !data.bedrooms || !data.bathrooms || !data.finishing) {
-          toast.error("Please fill in all required property details");
-          return false;
-        }}else{
-          if (!data.built_up_area  || !data.finishing) {
-            console.log("Missing fields:", {
-              built_up_area: data.built_up_area,
-              bathrooms: data.bathrooms,
-              finishing: data.finishing,
-            });
+        if (isCommercial) {
+          if (!data.built_up_area || !data.finishing) {
+            toast.error("Please fill in all required property details");
+            return false;
+          }
+        } else {
+          if (!data.built_up_area || !data.bedrooms || !data.bathrooms || !data.finishing) {
             toast.error("Please fill in all required property details");
             return false;
           }
@@ -226,7 +216,6 @@ export function ListingWizard({ onClose, listing }: ListingWizardProps) {
 
     try {
       if (isEdit) {
-        // Upload any newly added files first, then include all image URLs
         let allImages = [...data.images];
         if (data.imageFiles.length > 0) {
           const uploaded = await uploadImages.mutateAsync(data.imageFiles);
@@ -238,8 +227,6 @@ export function ListingWizard({ onClose, listing }: ListingWizardProps) {
         });
         toast.success("Listing updated successfully!");
       } else {
-   //    console.log("Submitting listing with data:", baseBody, "and files:", data.imageFiles);
-        // Create: send all fields + files in one multipart request
         await createListing.mutateAsync({ data: baseBody, files: data.imageFiles });
         toast.success("Listing submitted for approval!");
       }

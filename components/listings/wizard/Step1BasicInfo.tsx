@@ -8,12 +8,7 @@ import { useCitiesAdmin } from "@/Modules/cities/hooks";
 import { useProjects } from "@/Modules/projects/hooks";
 import type { WizardData, WizardOnChange } from "./wizard-types";
 
-interface Step1Props {
-  data: WizardData;
-  onChange: WizardOnChange;
-}
-
-export function Step1BasicInfo({ data, onChange }: Step1Props) {
+export function Step1BasicInfo({ data, onChange }: { data: WizardData; onChange: WizardOnChange }) {
   const { data: citiesRes } = useCitiesAdmin({ limit: 100 });
   const cities = citiesRes?.data ?? [];
 

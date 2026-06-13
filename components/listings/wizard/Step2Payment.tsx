@@ -5,12 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { formatPriceEGP, calculateInstallment } from "@/lib/constants";
 import type { WizardData, WizardOnChange } from "./wizard-types";
 
-interface Step2Props {
-  data: WizardData;
-  onChange: WizardOnChange;
-}
-
-export function Step2Payment({ data, onChange }: Step2Props) {
+export function Step2Payment({ data, onChange }: { data: WizardData; onChange: WizardOnChange }) {
   const price = Number(data.price) || 0;
   const downPaymentPercent = Number(data.down_payment_amount) || 0;
   const downPaymentAmount = Math.round((price * downPaymentPercent) / 100);

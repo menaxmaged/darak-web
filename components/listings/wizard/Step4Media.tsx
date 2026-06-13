@@ -5,13 +5,7 @@ import { useUploadListingImages } from "@/Modules/listings/hooks";
 import { toast } from "sonner";
 import type { WizardData, WizardOnChange } from "./wizard-types";
 
-interface Step4Props {
-  data: WizardData;
-  isEdit?: boolean;
-  onChange: WizardOnChange;
-}
-
-export function Step4Media({ data, isEdit = false, onChange }: Step4Props) {
+export function Step4Media({ data, isEdit = false, onChange }: { data: WizardData; isEdit?: boolean; onChange: WizardOnChange }) {
   const uploadImages = useUploadListingImages();
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {

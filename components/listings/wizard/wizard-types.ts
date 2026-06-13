@@ -1,3 +1,5 @@
+export const COMMERCIAL_TYPES = ["office", "retail", "clinic", "warehouse"] as const;
+
 export interface WizardData {
   // Step 1
   title: string;
