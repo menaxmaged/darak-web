@@ -23,7 +23,6 @@ export default function EditListingPage() {
   }
 
   const listing = listingRes?.data;
-    console.log("Fetched listing data:", listing);
   if (!listing) {
     return (
       <div className="container-custom py-8 text-center text-muted-foreground">

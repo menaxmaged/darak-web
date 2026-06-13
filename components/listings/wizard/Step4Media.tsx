@@ -3,6 +3,7 @@ import { Label } from "@/components/ui/label";
 import { Upload, X } from "lucide-react";
 import { useUploadListingImages } from "@/Modules/listings/hooks";
 import { toast } from "sonner";
+import Image from "next/image";
 import type { WizardData, WizardOnChange } from "./wizard-types";
 
 export function Step4Media({ data, isEdit = false, onChange }: { data: WizardData; isEdit?: boolean; onChange: WizardOnChange }) {
@@ -36,8 +37,13 @@ export function Step4Media({ data, isEdit = false, onChange }: { data: WizardDat
   };
 
   const isUploading = uploadImages.isPending;
-  const totalCount = data.images.length + data.imageFiles.length;
+    const totalCount = data.images.length + data.imageFiles.length;
+  
+   const allImages = ( data.images).map(img => 
+    img.startsWith('http://') || img.startsWith('https://') ? img : `${process.env.NEXT_PUBLIC_API_URL}${img}`
+  );
 
+    
   return (
     <div className="space-y-6">
       <div>
@@ -70,11 +76,12 @@ export function Step4Media({ data, isEdit = false, onChange }: { data: WizardDat
         </div>
 
         {/* Existing URL images (edit mode) */}
-        {data.images.length > 0 && (
+        {allImages.length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {data.images.map((url, index) => (
+            {allImages.map((url, index) => (
               <div key={url} className="relative group aspect-video rounded-lg overflow-hidden bg-secondary">
-                <img src={url} alt={`Image ${index + 1}`} className="w-full h-full object-cover" />
+             
+                <Image src={url} fill alt={`Image ${index + 1}`} className="object-contain" unoptimized />
                 <button
                   onClick={() => removeExistingUrl(index)}
                   className="absolute top-2 right-2 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
@@ -96,10 +103,12 @@ export function Step4Media({ data, isEdit = false, onChange }: { data: WizardDat
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {data.imageFiles.map((file, index) => (
               <div key={index} className="relative group aspect-video rounded-lg overflow-hidden bg-secondary">
-                <img
+                <Image
                   src={URL.createObjectURL(file)}
                   alt={file.name}
-                  className="w-full h-full object-cover"
+                  className="object-cover"
+                  fill
+                  unoptimized
                 />
                 <button
                   onClick={() => removeNewFile(index)}

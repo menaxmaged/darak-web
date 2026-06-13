@@ -104,10 +104,10 @@ export function Step1BasicInfo({ data, onChange }: { data: WizardData; onChange:
           <Select
             value={data.area_id}
             onValueChange={(v) => onChange("area_id", v)}
-            disabled={!data.city}
+            disabled={!data.city_id}
           >
             <SelectTrigger>
-              <SelectValue placeholder={data.city ? "Select area" : "Select city first"} />
+              <SelectValue placeholder={data.city_id  ? "Select area" : "Select city first"} />
             </SelectTrigger>
             <SelectContent>
               {areas.map((area) => (
@@ -125,10 +125,10 @@ export function Step1BasicInfo({ data, onChange }: { data: WizardData; onChange:
           <Select
             value={data.project_id}
             onValueChange={(v) => onChange("project_id", v)}
-            disabled={!data.city}
+            disabled={!data.city_id}
           >
             <SelectTrigger>
-              <SelectValue placeholder={data.city ? "Select project (optional)" : "Select city first"} />
+              <SelectValue placeholder={data.city_id ? "Select project (optional)" : "Select city first"} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="none">None</SelectItem>

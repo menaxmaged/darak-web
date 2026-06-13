@@ -1,6 +1,7 @@
 import { PROPERTY_TYPES, FINISHING_TYPES, FLOOR_TYPES, VIEW_TYPES, formatPriceEGP, calculateInstallment } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, BedDouble, Bath, Maximize, Calendar, Phone, MessageCircle } from "lucide-react";
+import Image from "next/image";
 import type { WizardData } from "./wizard-types";
 
 interface ListingPreviewProps {
@@ -11,13 +12,9 @@ interface ListingPreviewProps {
 }
 
 export function ListingPreview({ data, previewImages, areaName, projectName }: ListingPreviewProps) {
-  const allImagess = (previewImages ?? data.images).map(img => 
-    img.startsWith('http://') || img.startsWith('https://') ? img : `${process.env.NEXT_PUBLIC_API_URL}${img}`
-  );
-  const allImages = (previewImages ?? data.images).map(img => 
-img
-  );
-  console.log("Preview images:", allImages);
+  const allImages = (previewImages ?? data.images).map(img => {
+    return img.startsWith('http://') || img.startsWith('https://') || img.startsWith('blob:') ? img : `${process.env.NEXT_PUBLIC_API_URL}${img}`;
+  });
   const price = Number(data.price) || 0;
   const downPaymentPercent = Number(data.down_payment_amount) || 0;
   const downPaymentAmount = Math.round((price * downPaymentPercent) / 100);
@@ -42,8 +39,9 @@ img
         {/* Image Gallery Preview */}
         <div className="relative aspect-video bg-secondary">
           {allImages.length > 0 ? (
-            <img src={allImages[0]} alt={data.title} className="w-full h-full object-cover" />
-          ) : (
+
+            <Image src={allImages[0]} alt={data.title}  fill className="object-cover" unoptimized/>
+       ) : (
             <div className="w-full h-full flex items-center justify-center text-muted-foreground">
               No images uploaded
             </div>

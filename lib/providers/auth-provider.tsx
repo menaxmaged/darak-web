@@ -31,7 +31,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (token) {
         try {
           const freshUser = await authApi.checkAuth();
-          // console.log('Checked auth on init, got user:', freshUser);
           if (freshUser) {
             setUser(freshUser);
           } else {
@@ -48,7 +47,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = (data: LoginResponse) => {
-    console.log('Logging in user:', data);
     setUser(data.user);
      tokenManager.set(data.token? data.token : '');
     

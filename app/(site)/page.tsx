@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Input } from '@/components/ui/input';
 import { ListingCard } from '@/components/listings/ListingCard';
-
+import Image from 'next/image';
 import { useListings } from '@/Modules/listings/hooks';
 
 export default function HomePage() {
@@ -43,7 +43,8 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="relative min-h-[600px] flex items-center gradient-hero text-background overflow-hidden">
         <div className="absolute inset-0">
-          <img
+          <Image
+          fill
             src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920&q=80"
             alt="Hero background"
             className="w-full h-full object-cover opacity-20"

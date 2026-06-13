@@ -89,17 +89,12 @@ export default function DashboardPage() {
 
   const listings = listingsRes?.data ?? [];
 
-  console.log('Listings data:', listings);
   const leads = leadsRes?.meta?.totalItems ?? 0;
   const projects = projectsRes?.meta?.totalItems ?? 0;
   const areas = areasRes?.meta?.totalItems ?? 0;
-  console.log('Dashboard data:', { listings, leads, projects, areas });
   const pending = listings.filter((l) => l.listing_status === 'pending').length;
-  console.log('Pending listings count:', pending);
   const approved = listings.filter((l) => l.listing_status === 'approved').length;
-  console.log('Approved listings count:', approved);
   const rejected = listings.filter((l) => l.listing_status === 'rejected').length;
-console.log('Rejected listings count:', rejected);
   const statCards = [
     { label: 'Total Listings', value: listingsRes?.meta?.totalItems ?? 0, icon: FileText, sub: 'all time' },
     { label: 'Pending Review', value: pending, icon: Clock, sub: 'awaiting action', subColor: 'text-amber-600', accent: true },

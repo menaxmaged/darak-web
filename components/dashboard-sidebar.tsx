@@ -37,10 +37,12 @@ function SidebarContent({
       {/* Logo */}
       <div className="px-8 p-4 border-b border-border">
            <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">D</span>
-            </div>
-            <span className="font-display font-bold text-xl">LVN</span>
+          
+
+                      {/* Logo */}
+          <Link href="/" className="flex items-center gap-2">
+            <Image src="/logo.png" alt="LVN Logo" width={52} height={52} />
+          </Link>
           </Link>
       </div>
 
