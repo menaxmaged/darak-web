@@ -6,7 +6,8 @@ export interface WizardData {
   description: string;
   property_type: string;
   property_status: string;
-  city: string;
+  city_id: string;
+  city?: string;
   area_id: string;
   project_id: string;
   address: string;

@@ -82,9 +82,9 @@ export function Step1BasicInfo({ data, onChange }: { data: WizardData; onChange:
         <div className="space-y-2">
           <Label>City *</Label>
           <Select
-            value={data.city}
+            value={data.city_id}
             onValueChange={(v) => {
-              onChange("city", v);
+              onChange("city_id", v);
               onChange("area_id", "");
               onChange("project_id", "");
             }}
@@ -94,7 +94,7 @@ export function Step1BasicInfo({ data, onChange }: { data: WizardData; onChange:
             </SelectTrigger>
             <SelectContent>
               {cities.map((city) => (
-                <SelectItem key={city.id} value={city.id}>{city.name}</SelectItem>
+                <SelectItem key={city.id} value={String(city.id)}>{city.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>

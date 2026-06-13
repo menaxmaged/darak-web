@@ -6,6 +6,7 @@ export interface Listing {
   property_status: PropertyStatus;
   property_type: string;
   city: string;
+  city_id: number;
   area_id: number | null;
   project_id: number | null;
   advertiser_id: number;
@@ -24,6 +25,10 @@ export interface Listing {
   images: string[];
   admin_comment: string | null;
   is_cash_only: boolean;
+  view: string | null;
+  land_area: number | null;
+  floor: string | null;
+  address: string | null;
   created_at: string;
   updated_at: string;
   video_url: string;
@@ -39,7 +44,7 @@ export interface Listing {
 export type ListingInsert = {
   property_status: string;
   property_type: string;
-  city_id?: string;
+  city_id?: number | null;
   price: number;
   built_up_area: number;
   bedrooms: number;

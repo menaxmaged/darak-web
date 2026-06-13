@@ -29,6 +29,7 @@ const emptyData: WizardData = {
   description: "",
   property_type: "",
   property_status: "",
+  city_id: "",
   city: "",
   area_id: "",
   project_id: "",
@@ -61,28 +62,29 @@ function listingToWizardData(listing: Listing): WizardData {
     property_type: listing.property_type,
     property_status: listing.property_status,
     city: listing.city,
+    city_id: listing.city_id != null ? String(listing.city_id) : "",
     area_id: listing.area_id != null ? String(listing.area_id) : "",
     project_id: listing.project_id != null ? String(listing.project_id) : "",
-    address: "",
+    address: listing.address ?? "",
     price: String(listing.price),
     is_cash_only: listing.is_cash_only,
     down_payment_amount: listing.down_payment_amount != null ? String(listing.down_payment_amount) : "",
     installment_years: listing.installment_years != null ? String(listing.installment_years) : "",
     built_up_area: String(listing.built_up_area),
-    land_area: "",
+    land_area: listing.land_area != null ? String(listing.land_area) : "",
     bedrooms: String(listing.bedrooms),
     bathrooms: String(listing.bathrooms),
-    floor: "",
+    floor: listing.floor ?? "",
     finishing: listing.finishing ?? "",
     delivery_year: listing.delivery_year != null ? String(listing.delivery_year) : "",
-    view: "",
+    view: listing.view ?? "",
     imageFiles: [],
     images: listing.images ?? [],
-    video_url: "",
-    tour_url: "",
-    contact_name: "",
-    contact_phone: "",
-    contact_whatsapp: "",
+    video_url: listing.video_url ?? "",
+    tour_url: listing.tour_url ?? "",
+    contact_name: listing.contact_name ?? "",
+    contact_phone: listing.contact_phone ?? "",
+    contact_whatsapp: listing.contact_whatsapp ?? "",
   };
 }
 
@@ -116,7 +118,7 @@ export function ListingWizard({ onClose, listing }: { onClose: () => void; listi
   const validateStep = (step: number): boolean => {
     switch (step) {
       case 1:
-        if (!data.property_type || !data.property_status || !data.city || !data.area_id) {
+        if (!data.property_type || !data.property_status || !data.city_id || !data.area_id) {
           toast.error("Please fill in all required fields");
           return false;
         }
@@ -181,11 +183,11 @@ export function ListingWizard({ onClose, listing }: { onClose: () => void; listi
     const years = Number(data.installment_years) || 0;
     const areaId = data.area_id && data.area_id !== "none" ? Number(data.area_id) : null;
     const projectId = data.project_id && data.project_id !== "none" ? Number(data.project_id) : null;
-
+    const cityId = data.city_id ? Number(data.city_id) : null;
     const baseBody = {
       property_type: data.property_type,
       property_status: data.property_status,
-      city_id: data.city,
+      city_id: cityId,
       price,
       built_up_area: Number(data.built_up_area),
       bedrooms: Number(data.bedrooms),
