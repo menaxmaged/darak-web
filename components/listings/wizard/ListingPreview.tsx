@@ -14,6 +14,7 @@ export function ListingPreview({ data, previewImages, areaName, projectName }: L
   const allImages = (previewImages ?? data.images).map(img => 
     img.startsWith('http://') || img.startsWith('https://') ? img : `${process.env.NEXT_PUBLIC_API_URL}${img}`
   );
+  console.log("Preview images:", allImages);
   const price = Number(data.price) || 0;
   const downPaymentPercent = Number(data.down_payment_amount) || 0;
   const downPaymentAmount = Math.round((price * downPaymentPercent) / 100);
