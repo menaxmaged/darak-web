@@ -99,7 +99,7 @@ export function Step1BasicInfo({ data, onChange }: Step1Props) {
             </SelectTrigger>
             <SelectContent>
               {cities.map((city) => (
-                <SelectItem key={city.id} value={city.name}>{city.name}</SelectItem>
+                <SelectItem key={city.id} value={city.id}>{city.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
