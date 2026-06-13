@@ -17,6 +17,7 @@ function SidebarContent({
   searchParams,
   handleLogout,
   setIsMobileMenuOpen,
+  
 }: {
   pathname: string;
   searchParams: URLSearchParams;
@@ -40,9 +41,7 @@ function SidebarContent({
           
 
                       {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
             <Image src="/logo.png" alt="LVN Logo" width={52} height={52} />
-          </Link>
           </Link>
       </div>
 
