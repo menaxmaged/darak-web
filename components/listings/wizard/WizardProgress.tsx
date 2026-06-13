@@ -17,7 +17,7 @@ export function WizardProgress({ currentStep, totalSteps, steps }: WizardProgres
           const isCurrent = stepNumber === currentStep;
           
           return (
-            <div key={index} className="flex-1 flex items-center">
+            <div key={index} className="flex items-center">
               <div className="flex flex-col items-center relative">
                 <div
                   className={cn(

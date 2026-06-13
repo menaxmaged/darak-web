@@ -61,7 +61,7 @@ export type ListingInsert = {
   contact_phone?: string;
   contact_whatsapp?: string;
   land_area?: number;
-  floor?: number;
+  floor?: string;
   view?: string;
 };
 

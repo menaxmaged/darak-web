@@ -209,7 +209,7 @@ export function ListingWizard({ onClose, listing }: { onClose: () => void; listi
       contact_phone: data.contact_phone || undefined,
       contact_whatsapp: data.contact_whatsapp || undefined,
       land_area: data.land_area ? Number(data.land_area) : undefined,
-      floor: data.floor ? Number(data.floor) : undefined,
+      floor: data.floor ,
       view: data.view || undefined,
 
     };
@@ -255,7 +255,7 @@ export function ListingWizard({ onClose, listing }: { onClose: () => void; listi
         )}
 
         {/* Content */}
-        <div className="max-w-3xl mx-auto mt-16">
+        <div className="mx-auto mt-16">
           <div className="bg-card border border-border rounded-xl p-6 md:p-8">
             {showPreview ? (
               <ListingPreview

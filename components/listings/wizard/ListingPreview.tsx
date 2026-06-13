@@ -112,7 +112,7 @@ img
             {data.floor && (
               <div>
                 <span className="text-muted-foreground">Floor:</span>
-                <span className="ml-2 font-medium">{floorLabel}</span>
+                <span className="ml-2 font-medium">{floorLabel}d</span>
               </div>
             )}
             {data.view && (
