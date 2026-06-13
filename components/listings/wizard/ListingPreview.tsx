@@ -11,10 +11,13 @@ interface ListingPreviewProps {
 }
 
 export function ListingPreview({ data, previewImages, areaName, projectName }: ListingPreviewProps) {
-  const allImages = (previewImages ?? data.images).map(img => 
+  const allImagess = (previewImages ?? data.images).map(img => 
     img.startsWith('http://') || img.startsWith('https://') ? img : `${process.env.NEXT_PUBLIC_API_URL}${img}`
   );
-  console.log("Preview images:", allImages);
+  const allImages = (previewImages ?? data.images).map(img => 
+    `${process.env.NEXT_PUBLIC_API_URL}${img}`
+  );
+  console.log("Preview images:", allImagess);
   const price = Number(data.price) || 0;
   const downPaymentPercent = Number(data.down_payment_amount) || 0;
   const downPaymentAmount = Math.round((price * downPaymentPercent) / 100);
