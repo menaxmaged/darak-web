@@ -13,9 +13,7 @@ export const listingApi = {
 
   publicList: async (filters: ListingsFilters = {}) => {
     return withMock(async () => {
-      console.log('Fetching public listings with filters:', filters);
       const response = await api.get<Listing[]>('/listings', { params: filters });
-      console.log('Public listings response:', response.data);
       return { data: response.data.data ?? [], meta: response.data.meta };
     }, mockListingsList);
   },
