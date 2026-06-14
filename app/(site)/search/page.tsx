@@ -10,7 +10,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ListingCard } from "@/components/listings/ListingCard";
 import { usePublicListings } from "@/Modules/listings/listings";
-import { CITIES, PROPERTY_TYPES, FINISHING_TYPES } from "@/lib/constants";
+import { CITIES, PROPERTY_TYPES, FINISHING_TYPES, VIEW_TYPES, FLOOR_TYPES, DELIVERY_YEARS } from "@/lib/constants";
 
 // ─── Filter panel ─────────────────────────────────────────────────────────────
 
@@ -25,6 +25,13 @@ interface Filters {
   bedrooms: string | null;
   bathrooms: string | null;
   finishing: string | null;
+  view: string | null;
+  floor: string | null;
+  minLandArea: string | null;
+  maxLandArea: string | null;
+  deliveryYear: string | null;
+  maxDownPayment: string | null;
+  minInstallmentYears: string | null;
 }
 
 interface FilterContentProps extends Filters {
@@ -32,7 +39,7 @@ interface FilterContentProps extends Filters {
   onClear: () => void;
 }
 
-function FilterContent({ status, city, propertyType, minPrice, maxPrice, minArea, maxArea, bedrooms, bathrooms, finishing, onFilter, onClear }: FilterContentProps) {
+function FilterContent({ status, city, propertyType, minPrice, maxPrice, minArea, maxArea, bedrooms, bathrooms, finishing, view, floor, minLandArea, maxLandArea, deliveryYear, maxDownPayment, minInstallmentYears, onFilter, onClear }: FilterContentProps) {
   return (
     <div className="space-y-6">
       {/* Status */}
@@ -188,6 +195,113 @@ function FilterContent({ status, city, propertyType, minPrice, maxPrice, minArea
         </Select>
       </div>
 
+      {/* View */}
+      <div>
+        <label className="text-sm font-medium mb-2 block">View</label>
+        <Select value={view || "all"} onValueChange={(v) => onFilter("view", v === "all" ? null : v)}>
+          <SelectTrigger>
+            <SelectValue placeholder="Any view" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Any view</SelectItem>
+            {VIEW_TYPES.map((t) => (
+              <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Floor */}
+      <div>
+        <label className="text-sm font-medium mb-2 block">Floor</label>
+        <Select value={floor || "all"} onValueChange={(v) => onFilter("floor", v === "all" ? null : v)}>
+          <SelectTrigger>
+            <SelectValue placeholder="Any floor" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Any floor</SelectItem>
+            {FLOOR_TYPES.map((t) => (
+              <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Land Area */}
+      <div>
+        <label className="text-sm font-medium mb-2 block">Land Area (m²)</label>
+        <div className="flex gap-2">
+          <Input
+            type="number"
+            placeholder="Min"
+            value={minLandArea || ""}
+            onChange={(e) => onFilter("minLandArea", e.target.value || null)}
+            className="text-sm"
+          />
+          <Input
+            type="number"
+            placeholder="Max"
+            value={maxLandArea || ""}
+            onChange={(e) => onFilter("maxLandArea", e.target.value || null)}
+            className="text-sm"
+          />
+        </div>
+      </div>
+
+      {/* Delivery Year */}
+      <div>
+        <label className="text-sm font-medium mb-2 block">Delivery Year</label>
+        <div className="flex gap-2 flex-wrap">
+          {(["any", ...DELIVERY_YEARS] as string[]).map((v) => (
+            <button
+              key={v}
+              onClick={() => onFilter("deliveryYear", v === "any" ? null : v.replace("+", ""))}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                (v === "any" && !deliveryYear) || deliveryYear === v.replace("+", "")
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary"
+              }`}
+            >
+              {v}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Down Payment */}
+      <div>
+        <label className="text-sm font-medium mb-2 block">Max Down Payment (%)</label>
+        <Input
+          type="number"
+          placeholder="e.g. 20"
+          value={maxDownPayment || ""}
+          onChange={(e) => onFilter("maxDownPayment", e.target.value || null)}
+          className="text-sm"
+          min={0}
+          max={100}
+        />
+      </div>
+
+      {/* Installment Years */}
+      <div>
+        <label className="text-sm font-medium mb-2 block">Min Installment Years</label>
+        <div className="flex gap-2 flex-wrap">
+          {["any", "3", "5", "7", "10", "15+"].map((v) => (
+            <button
+              key={v}
+              onClick={() => onFilter("minInstallmentYears", v === "any" ? null : v.replace("+", ""))}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                (v === "any" && !minInstallmentYears) || minInstallmentYears === v.replace("+", "")
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary"
+              }`}
+            >
+              {v}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <Button variant="outline" className="w-full" onClick={onClear}>
         Clear all filters
       </Button>
@@ -213,6 +327,13 @@ function SearchContent() {
   const bedrooms = searchParams.get("bedrooms");
   const bathrooms = searchParams.get("bathrooms");
   const finishing = searchParams.get("finishing");
+  const view = searchParams.get("view");
+  const floor = searchParams.get("floor");
+  const minLandArea = searchParams.get("minLandArea");
+  const maxLandArea = searchParams.get("maxLandArea");
+  const deliveryYear = searchParams.get("deliveryYear");
+  const maxDownPayment = searchParams.get("maxDownPayment");
+  const minInstallmentYears = searchParams.get("minInstallmentYears");
   const sortBy = (searchParams.get("sort") || "newest") as "newest" | "price_low" | "price_high" | "delivery";
   const page = Number(searchParams.get("page") || "1");
 
@@ -237,6 +358,13 @@ function SearchContent() {
     bedrooms: parseBedBath(bedrooms),
     bathrooms: parseBedBath(bathrooms),
     finishing: finishing || undefined,
+    view: view || undefined,
+    floor: floor || undefined,
+    minLandArea: minLandArea ? Number(minLandArea) : undefined,
+    maxLandArea: maxLandArea ? Number(maxLandArea) : undefined,
+    deliveryYear: deliveryYear ? Number(deliveryYear) : undefined,
+    maxDownPayment: maxDownPayment ? Number(maxDownPayment) : undefined,
+    minInstallmentYears: minInstallmentYears ? Number(minInstallmentYears) : undefined,
     sortBy,
     page,
     limit: 12,
@@ -264,6 +392,7 @@ function SearchContent() {
 
   const filterProps: FilterContentProps = {
     status, city, propertyType, minPrice, maxPrice, minArea, maxArea, bedrooms, bathrooms, finishing,
+    view, floor, minLandArea, maxLandArea, deliveryYear, maxDownPayment, minInstallmentYears,
     onFilter: updateFilter,
     onClear: clearFilters,
   };
@@ -280,6 +409,13 @@ function SearchContent() {
     bedrooms: "Beds",
     bathrooms: "Baths",
     finishing: "Finishing",
+    view: "View",
+    floor: "Floor",
+    minLandArea: "Min Land",
+    maxLandArea: "Max Land",
+    deliveryYear: "Delivery Year",
+    maxDownPayment: "Max Down %",
+    minInstallmentYears: "Min Install. Yrs",
   };
 
   return (

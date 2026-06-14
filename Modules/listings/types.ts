@@ -86,9 +86,14 @@ export interface ListingsFilters {
   bedrooms?: number;
   bathrooms?: number;
   finishing?: string;
+  view?: string;
+  floor?: string;
+  minLandArea?: number;
+  maxLandArea?: number;
   deliveryYear?: number;
   minDownPayment?: number;
   maxDownPayment?: number;
+  minInstallmentYears?: number;
   listingStatus?: ListingStatus | 'active';
   advertiserId?: string;
   isFeatured?: boolean;
