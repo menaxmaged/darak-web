@@ -1,9 +1,9 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { Filter, SlidersHorizontal, X } from "lucide-react";
+import { Filter, SlidersHorizontal, X, Search as SearchIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -202,6 +202,7 @@ function SearchContent() {
   const searchParams = useSearchParams();
   const [filterOpen, setFilterOpen] = useState(false);
 
+  const q = searchParams.get("q");
   const status = searchParams.get("status") as "ready" | "offplan" | null;
   const city = searchParams.get("city");
   const propertyType = searchParams.get("type");
@@ -215,8 +216,17 @@ function SearchContent() {
   const sortBy = (searchParams.get("sort") || "newest") as "newest" | "price_low" | "price_high" | "delivery";
   const page = Number(searchParams.get("page") || "1");
 
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const parseBedBath = (val: string | null) => {
+    if (!val) return undefined;
+    const n = parseInt(val, 10);
+    return isNaN(n) ? undefined : n;
+  };
+
   const { data: listingsRes, isLoading } = usePublicListings({
-    listingStatus: "active",
+    listingStatus: "approved",
+    search: q || undefined,
     propertyStatus: status || undefined,
     city: city || undefined,
     propertyType: propertyType || undefined,
@@ -224,8 +234,8 @@ function SearchContent() {
     maxPrice: maxPrice ? Number(maxPrice) : undefined,
     minArea: minArea ? Number(minArea) : undefined,
     maxArea: maxArea ? Number(maxArea) : undefined,
-    bedrooms: bedrooms ? Number(bedrooms) : undefined,
-    bathrooms: bathrooms ? Number(bathrooms) : undefined,
+    bedrooms: parseBedBath(bedrooms),
+    bathrooms: parseBedBath(bathrooms),
     finishing: finishing || undefined,
     sortBy,
     page,
@@ -238,17 +248,19 @@ function SearchContent() {
     const params = new URLSearchParams(searchParams);
     if (value) {
       params.set(key, value);
-      if (key !== "page") params.delete("page");
     } else {
       params.delete(key);
     }
-    const query = params.toString();
-    router.replace(query ? `/search?${query}` : "/search");
+    if (key !== "page") params.delete("page");
+    const qs = params.toString();
+    router.replace(qs ? `/search?${qs}` : "/search");
   };
 
   const clearFilters = () => router.replace("/search");
 
-  const activeFilters = Array.from(searchParams.entries()).filter(([k]) => k !== "sort" && k !== "page");
+  const activeFilters = Array.from(searchParams.entries()).filter(
+    ([k]) => k !== "sort" && k !== "page" && k !== "filter"
+  );
 
   const filterProps: FilterContentProps = {
     status, city, propertyType, minPrice, maxPrice, minArea, maxArea, bedrooms, bathrooms, finishing,
@@ -257,6 +269,7 @@ function SearchContent() {
   };
 
   const FILTER_LABELS: Record<string, string> = {
+    q: "Search",
     status: "Status",
     city: "City",
     type: "Type",
@@ -318,6 +331,27 @@ function SearchContent() {
               </SheetContent>
             </Sheet>
           </div>
+        </div>
+
+        {/* Search Input */}
+        <div className="flex gap-2 mb-6">
+          <div className="relative flex-1">
+            <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Input
+              key={q || ""}
+              ref={searchInputRef}
+              defaultValue={q || ""}
+              placeholder="Search by title, area, or project..."
+              onKeyDown={(e) => e.key === "Enter" && updateFilter("q", searchInputRef.current?.value || null)}
+              className="pl-12 h-12"
+            />
+          </div>
+          <Button
+            onClick={() => updateFilter("q", searchInputRef.current?.value || null)}
+            className="h-12 px-6"
+          >
+            Search
+          </Button>
         </div>
 
         {/* Active Filters */}

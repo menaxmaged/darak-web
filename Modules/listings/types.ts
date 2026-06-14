@@ -73,6 +73,7 @@ export type ListingInsert = {
 export type ListingUpdate = Partial<ListingInsert>;
 
 export interface ListingsFilters {
+  search?: string;
   propertyStatus?: PropertyStatus | 'for-sale';
   propertyType?: string;
   city?: string;
