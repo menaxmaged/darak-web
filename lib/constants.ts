@@ -131,8 +131,8 @@ export const INSTALLMENT_FREQUENCIES = [
   { value: "annual", label: "Annual" },
 ] as const;
 
-export const DELIVERY_YEARS = ["2025", "2026", "2027", "2028+"] as const;
-
+//export const DELIVERY_YEARS = ["2025", "2026", "2027", "2028"] as const;
+export const DELIVERY_YEARS = Array.from({ length: 10 }, (_, i) => (new Date().getFullYear() + i).toString()); 
 export const QUICK_FILTERS = [
   { id: "immediate", label: "Immediate Delivery", icon: "🏠" },
   { id: "zero_down", label: "0% Down Payment", icon: "💰" },
@@ -198,7 +198,7 @@ export function formatPrice(price: number): string {
 }
 
 export function formatPriceEGP(price: number): string {
-  return `${formatPrice(price)} EGP`;
+  return `${formatPrice(price)}`;
 }
 
 export function calculateInstallment(

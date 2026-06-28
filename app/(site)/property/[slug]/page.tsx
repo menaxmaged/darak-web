@@ -215,26 +215,38 @@ function PropertyDetail({ listing }: { listing: Listing }) {
           {/* Payment plan */}
           {hasPlan && (
             <section>
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-4">
                 Payment Plan
               </h2>
               <div className="grid sm:grid-cols-3 gap-4">
-                <div className="p-4 border border-border rounded-xl">
-                  <p className="text-xs text-muted-foreground mb-1">Down Payment</p>
-                  <p className="font-bold text-lg">{listing.down_payment_amount}%</p>
-                  {downAmount != null && (
-                    <p className="text-xs text-muted-foreground">{formatPriceEGP(downAmount)}</p>
-                  )}
+                <div className="p-8 bg-linear-to-br from-blue-50 to-blue-100/50 border border-blue-200 rounded-2xl text-center hover:shadow-lg transition-shadow">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 mb-4 mx-auto">
+                    <Tag className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <p className="text-sm text-blue-600 font-medium mb-2">Down Payment</p>
+                  <p className="font-display font-bold text-3xl text-foreground mb-2">{formatPriceEGP(listing.down_payment_amount || 0)}</p>
+                                     <p className="text-sm font-semibold text-blue-600">EGP</p>
+
                 </div>
-                <div className="p-4 border border-border rounded-xl">
-                  <p className="text-xs text-muted-foreground mb-1">Installment Period</p>
-                  <p className="font-bold text-lg">{listing.installment_years} Years</p>
+                <div className="p-8 bg-linear-to-br from-emerald-50 to-emerald-100/50 border border-emerald-200 rounded-2xl text-center hover:shadow-lg transition-shadow">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-100 mb-4 mx-auto">
+                    <Calendar className="w-6 h-6 text-emerald-600" />
+                  </div>
+                  <p className="text-sm text-emerald-600 font-medium mb-2">Installment Period</p>
+                  <p className="font-display font-bold text-3xl text-foreground">{listing.installment_years}</p>
+                  <p className="text-sm text-emerald-600 font-semibold">Years</p>
                 </div>
-                <div className="p-4 border border-border rounded-xl">
-                  <p className="text-xs text-muted-foreground mb-1">Remaining</p>
-                  <p className="font-bold text-lg">
-                    {formatPriceEGP(listing.price - (downAmount ?? 0))}
+                <div className="p-8 bg-linear-to-br from-amber-50 to-amber-100/50 border border-amber-200 rounded-2xl text-center hover:shadow-lg transition-shadow">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-100 mb-4 mx-auto">
+                    <Building2 className="w-6 h-6 text-amber-600" />
+                  </div>
+                  <p className="text-sm text-amber-600 font-medium mb-2">Remaining Amount</p>
+                  <p className="font-display font-bold text-2xl mb-2 text-foreground">
+
+                    {formatPriceEGP(listing.price - (listing.down_payment_amount ?? 0))}
                   </p>
+                                                       <p className="text-sm font-semibold text-amber-600">EGP</p>
+
                 </div>
               </div>
             </section>
@@ -281,7 +293,7 @@ function PropertyDetail({ listing }: { listing: Listing }) {
               <p className="font-semibold text-sm">Interested in this property?</p>
               <a
                 href={`tel:${listing.contact_phone}`}
-                className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-border hover:bg-secondary transition-colors text-sm font-medium"
+                className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-border bg-primary text-white hover:bg-secondary transition-colors text-sm font-medium"
               >
                 <Phone className="w-4 h-4" /> Call
               </a>
@@ -305,7 +317,7 @@ function PropertyDetail({ listing }: { listing: Listing }) {
       >
         <a
           href={`tel:${listing.contact_phone}`}
-          className="flex flex-1 items-center justify-center gap-2 py-2.5 rounded-xl border border-border hover:bg-secondary transition-colors text-sm font-medium"
+          className="flex flex-1 items-center justify-center gap-2 py-2.5  rounded-xl border border-border hover:bg-secondary transition-colors text-white bg-primary text-sm font-medium"
         >
           <Phone className="w-6 h-6" /> Call
         </a>

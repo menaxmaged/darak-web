@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ListingCard } from '@/components/listings/ListingCard';
 import { useAuth } from '@/lib/providers/auth-provider';
-import { useListings } from '@/Modules/listings/hooks';
+import { useMyListings } from '@/Modules/listings/hooks';
 import type { Listing } from '@/Modules/listings/types';
 
 // ─── Stat card ─────────────────────────────────────────────────────────────────
@@ -76,8 +76,8 @@ function MyListingCard({ listing, onEdit }: { listing: Listing; onEdit: (l: List
 function MyListingsContent() {
   const { user } = useAuth();
   const router = useRouter();
-
-  const { data: listingsRes, isLoading } = useListings({
+  console.log('Rendering MyListingsContent for user:', user);
+  const { data: listingsRes, isLoading } = useMyListings({
     advertiserId: user?.id ? String(user.id) : undefined,
   });
   const listings = listingsRes?.data ?? [];
