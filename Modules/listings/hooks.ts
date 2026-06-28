@@ -10,8 +10,8 @@ export const useListings = (filters: ListingsFilters = {}) =>
 export const useMyListings = (filters: ListingsFilters = {}) =>
   useQuery({ queryKey: ['myListings', filters], queryFn: () => listingApi.listMy(filters) }); 
 
-export const usePublicListings = (filters: ListingsFilters = {}) =>
-  useQuery({ queryKey: ['publicListings', filters], queryFn: () => listingApi.publicList(filters) });
+// export const usePublicListings = (filters: ListingsFilters = {}) =>
+//   useQuery({ queryKey: ['publicListings', filters], queryFn: () => listingApi.publicList(filters) });
 
 export const useListing = (id: string | undefined) =>
   useQuery({

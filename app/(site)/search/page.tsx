@@ -11,14 +11,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ListingCard } from "@/components/listings/ListingCard";
 import { useListings } from "@/Modules/listings/listings";
 import {  PROPERTY_TYPES, FINISHING_TYPES, VIEW_TYPES, FLOOR_TYPES, DELIVERY_YEARS } from "@/lib/constants";
-import { useCities } from "@/Modules/areas/areas";
 import {useCitiesAdmin} from "@/Modules/cities/cities";
 
 // ─── Filter panel ─────────────────────────────────────────────────────────────
 
 interface Filters {
   status: "ready" | "offplan" | null;
-  city: number | null;
+  city: string | null;
   propertyType: string | null;
   minPrice: string | null;
   maxPrice: string | null;
@@ -39,11 +38,13 @@ interface Filters {
 interface FilterContentProps extends Filters {
   onFilter: (key: string, value: string | null) => void;
   onClear: () => void;
-  cities: Array<{ id: number; name: string }>;
+  cities: Array<{ id: string; name: string }>;
   citiesLoading: boolean;
+  selectedCityName: string | undefined;
+  selectedCityId: string | null;
 }
 
-function FilterContent({ status, city, propertyType, minPrice, maxPrice, minArea, maxArea, bedrooms, bathrooms, finishing, view, floor, minLandArea, maxLandArea, deliveryYear, maxDownPayment, minInstallmentYears, onFilter, onClear, cities, citiesLoading }: FilterContentProps) {
+function FilterContent({ status,  propertyType, minPrice, maxPrice, minArea, maxArea, bedrooms, bathrooms, finishing, view, floor, minLandArea, maxLandArea, deliveryYear, maxDownPayment, minInstallmentYears, onFilter, onClear, cities, citiesLoading, selectedCityName, selectedCityId }: FilterContentProps) {
   return (
     <div className="space-y-6">
       {/* Status */}
@@ -72,14 +73,16 @@ function FilterContent({ status, city, propertyType, minPrice, maxPrice, minArea
       {/* City */}
       <div>
         <label className="text-sm font-medium mb-2 block">City</label>
-        <Select value={city || "all"} onValueChange={(v) => onFilter("city", v === "all" ? null : v)} disabled={citiesLoading}>
+        <Select value={selectedCityId || "all"} onValueChange={(v) => onFilter("city", v === "all" ? null : v)} disabled={citiesLoading}>
           <SelectTrigger>
             <SelectValue placeholder={citiesLoading ? "Loading..." : "All cities"} />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All cities</SelectItem>
             {cities.map((c) => (
-              <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+              <SelectItem key={c.id} value={c.id}>
+                {c.name}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -352,11 +355,20 @@ function SearchContent() {
     return isNaN(n) ? undefined : n;
   };
 
+  const getCityName = (cityId: string | null) => {
+    if (!cityId) return undefined;
+    console.log('Looking up city name for ID:', cityId);
+    const cityObj = cities.find((c) => String(c.id) === cityId);
+    console.log('Found city object:', cityObj);
+    return cityObj?.name;
+  };
+  
+
   const { data: listingsRes, isLoading } = useListings({
     listingStatus: "approved",
     search: q || undefined,
     propertyStatus: status || undefined,
-    city: city || undefined,
+    city: city?.toString() || undefined,
     propertyType: propertyType || undefined,
     minPrice: minPrice ? Number(minPrice) : undefined,
     maxPrice: maxPrice ? Number(maxPrice) : undefined,
@@ -404,6 +416,8 @@ function SearchContent() {
     onClear: clearFilters,
     cities,
     citiesLoading,
+    selectedCityId: city,
+    selectedCityName: getCityName(city),
   };
 
   const FILTER_LABELS: Record<string, string> = {
@@ -471,6 +485,7 @@ function SearchContent() {
                   <SheetTitle>Filters</SheetTitle>
                 </SheetHeader>
                 <div className="mt-6">
+                  
                   <FilterContent {...filterProps} />
                 </div>
               </SheetContent>
@@ -502,15 +517,19 @@ function SearchContent() {
         {/* Active Filters */}
         {activeFilters.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-6">
-            {activeFilters.map(([key, value]) => (
-              <span key={key} className="inline-flex items-center gap-1 bg-secondary px-3 py-1 rounded-full text-sm">
-                <span className="text-muted-foreground text-xs">{FILTER_LABELS[key] ?? key}:</span>
-                {value}
-                <button onClick={() => updateFilter(key, null)} className="hover:text-destructive">
-                  <X className="h-3 w-3" />
-                </button>
-              </span>
-            ))}
+            {activeFilters.map(([key, value]) => {
+              const displayValue = key === "city" ? getCityName(value) : value;
+              console.log('Active filter:', key, value, 'Display value:', displayValue);
+              return (
+                <span key={key} className="inline-flex items-center gap-1 bg-secondary px-3 py-1 rounded-full text-sm">
+                  <span className="text-muted-foreground text-xs">{FILTER_LABELS[key] ?? key}:</span>
+                  {displayValue}
+                  <button onClick={() => updateFilter(key, null)} className="hover:text-destructive">
+                    <X className="h-3 w-3" />
+                  </button>
+                </span>
+              );
+            })}
           </div>
         )}
 
