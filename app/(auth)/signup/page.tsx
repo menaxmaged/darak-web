@@ -74,7 +74,9 @@ export default function SignupPage() {
         gender:       gender || undefined,
       });
       toast.success('Account created! You can now sign in.');
-      router.push('/login');
+      // router.push('/login');
+          router.push(`/activate-account?email=${encodeURIComponent(email)}`);
+
     } catch (error) {
       toast.error(getErrorMessage(error));
     }
