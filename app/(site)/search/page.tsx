@@ -9,14 +9,16 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ListingCard } from "@/components/listings/ListingCard";
-import { usePublicListings } from "@/Modules/listings/listings";
-import { CITIES, PROPERTY_TYPES, FINISHING_TYPES, VIEW_TYPES, FLOOR_TYPES, DELIVERY_YEARS } from "@/lib/constants";
+import { useListings } from "@/Modules/listings/listings";
+import {  PROPERTY_TYPES, FINISHING_TYPES, VIEW_TYPES, FLOOR_TYPES, DELIVERY_YEARS } from "@/lib/constants";
+import { useCities } from "@/Modules/areas/areas";
+import {useCitiesAdmin} from "@/Modules/cities/cities";
 
 // ─── Filter panel ─────────────────────────────────────────────────────────────
 
 interface Filters {
   status: "ready" | "offplan" | null;
-  city: string | null;
+  city: number | null;
   propertyType: string | null;
   minPrice: string | null;
   maxPrice: string | null;
@@ -37,9 +39,11 @@ interface Filters {
 interface FilterContentProps extends Filters {
   onFilter: (key: string, value: string | null) => void;
   onClear: () => void;
+  cities: Array<{ id: number; name: string }>;
+  citiesLoading: boolean;
 }
 
-function FilterContent({ status, city, propertyType, minPrice, maxPrice, minArea, maxArea, bedrooms, bathrooms, finishing, view, floor, minLandArea, maxLandArea, deliveryYear, maxDownPayment, minInstallmentYears, onFilter, onClear }: FilterContentProps) {
+function FilterContent({ status, city, propertyType, minPrice, maxPrice, minArea, maxArea, bedrooms, bathrooms, finishing, view, floor, minLandArea, maxLandArea, deliveryYear, maxDownPayment, minInstallmentYears, onFilter, onClear, cities, citiesLoading }: FilterContentProps) {
   return (
     <div className="space-y-6">
       {/* Status */}
@@ -68,14 +72,14 @@ function FilterContent({ status, city, propertyType, minPrice, maxPrice, minArea
       {/* City */}
       <div>
         <label className="text-sm font-medium mb-2 block">City</label>
-        <Select value={city || "all"} onValueChange={(v) => onFilter("city", v === "all" ? null : v)}>
+        <Select value={city || "all"} onValueChange={(v) => onFilter("city", v === "all" ? null : v)} disabled={citiesLoading}>
           <SelectTrigger>
-            <SelectValue placeholder="All cities" />
+            <SelectValue placeholder={citiesLoading ? "Loading..." : "All cities"} />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All cities</SelectItem>
-            {CITIES.map((c) => (
-              <SelectItem key={c} value={c}>{c}</SelectItem>
+            {cities.map((c) => (
+              <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -339,13 +343,16 @@ function SearchContent() {
 
   const searchInputRef = useRef<HTMLInputElement>(null);
 
+  const { data: citiesRes, isLoading: citiesLoading } = useCitiesAdmin();
+  const cities = citiesRes?.data ?? [];
+
   const parseBedBath = (val: string | null) => {
     if (!val) return undefined;
     const n = parseInt(val, 10);
     return isNaN(n) ? undefined : n;
   };
 
-  const { data: listingsRes, isLoading } = usePublicListings({
+  const { data: listingsRes, isLoading } = useListings({
     listingStatus: "approved",
     search: q || undefined,
     propertyStatus: status || undefined,
@@ -395,6 +402,8 @@ function SearchContent() {
     view, floor, minLandArea, maxLandArea, deliveryYear, maxDownPayment, minInstallmentYears,
     onFilter: updateFilter,
     onClear: clearFilters,
+    cities,
+    citiesLoading,
   };
 
   const FILTER_LABELS: Record<string, string> = {

@@ -5,10 +5,10 @@ import type { City, CityInsert, CityUpdate, CitiesFilters } from './types';
 
 export const cityApi = {
   list: async (filters: CitiesFilters = {}) => {
-    return withMock(async () => {
+    console.log('Fetching cities with filters:', filters);
       const response = await api.get<City[]>('/admin/cities', { params: filters });
+      console.log('Received cities response:', response.data);
       return { data: response.data.data ?? [], meta: response.data.meta };
-    }, mockCitiesList);
   },
 
   get: async (id: string) => {

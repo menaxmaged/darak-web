@@ -116,7 +116,7 @@ export default function UserDashboardPage() {
           Quick Actions
         </h2>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <QuickNavCard href="/dashboard/listings" icon={FileText} label="All Listings" description="Browse and manage your listings" />
+          <QuickNavCard href="/dashboard/my-listings" icon={FileText} label="All Listings" description="Browse and manage your listings" />
         </div>
       </section>
     </div>

@@ -19,10 +19,8 @@ export const areaApi = {
   },
 
   cities: async () => {
-    return withMock(async () => {
       const response = await api.get<string[]>('/admin/areas/cities');
       return response.data;
-    }, mockCities);
   },
 
   create: async (data: AreaInsert) => {

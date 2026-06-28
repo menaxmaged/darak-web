@@ -5,31 +5,27 @@ import type { Listing, ListingInsert, ListingUpdate, ListingsFilters } from './t
 
 export const listingApi = {
   list: async (filters: ListingsFilters = {}) => {
-    return withMock(async () => {
       console.log('Fetching listings with filters:', filters);
-      const response = await api.get<Listing[]>('/admin/listings', { params: filters });
+      const response = await api.get<Listing[]>('/listings', { params: filters });
       return { data: response.data.data ?? [], meta: response.data.meta };
-    }, mockListingsList);
   },
 
   listMy: async (filters: ListingsFilters = {}) => {
-    return withMock(async () => {
       console.log('Fetching my listings with filters:', filters);
-      const response = await api.get<Listing[]>('/admin/listings/my', { params: filters });
+      const response = await api.get<Listing[]>('/listings/my', { params: filters });
       return { data: response.data.data ?? [], meta: response.data.meta };
-    }, mockListingsList);
   },
 
-  publicList: async (filters: ListingsFilters = {}) => {
-    return withMock(async () => {
-      const response = await api.get<Listing[]>('/listings', { params: filters });
-      return { data: response.data.data ?? [], meta: response.data.meta };
-    }, mockListingsList);
-  },
+  // publicList: async (filters: ListingsFilters = {}) => {
+  //   return withMock(async () => {
+  //     const response = await api.get<Listing[]>('/listings', { params: filters });
+  //     return { data: response.data.data ?? [], meta: response.data.meta };
+  //   }, mockListingsList);
+  // },
 
   get: async (id: string) => {
     return withMock(async () => {
-      const response = await api.get<Listing>(`/admin/listings/${id}`);
+      const response = await api.get<Listing>(`/listings/${id}`);
       return response.data;
     }, mockListingItem);
   },
