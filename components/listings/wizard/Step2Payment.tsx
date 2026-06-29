@@ -66,11 +66,11 @@ export function Step2Payment({ data, onChange }: { data: WizardData; onChange: W
                 value={data.down_payment_amount}
                 onChange={(e) => onChange("down_payment_amount", e.target.value)}
               />
-              {downPaymentAmount > 0 && (
+              {/* {downPaymentAmount > 0 && (
                 <p className="text-sm text-primary font-medium">
                   = {formatPriceEGP(downPaymentAmount)}
                 </p>
-              )}
+              )} */}
             </div>
             
             <div className="space-y-2">
