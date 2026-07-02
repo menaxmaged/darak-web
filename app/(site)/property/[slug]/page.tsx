@@ -6,12 +6,13 @@ import { useRouter } from 'next/navigation';
 import {
   MapPin, Bed, Bath, Maximize, ArrowLeft, ChevronLeft, ChevronRight,
   Phone, MessageCircle, Calendar, CheckCircle, Clock, Tag,
-  Home, Building2, Layers,
+  Home, Building2, Layers, User,
 } from 'lucide-react';
-import { useListing } from '@/Modules/listings/hooks';
+import { useListing, useListings } from '@/Modules/listings/hooks';
 import { formatPriceEGP } from '@/lib/constants';
 import { Skeleton } from '@/components/ui/skeleton';
 import { buildPropertySlug, parseListingId } from '@/lib/slug';
+import { ListingCard } from '@/components/listings/ListingCard';
 import type { Listing } from '@/Modules/listings/types';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -99,6 +100,35 @@ function SpecItem({ icon: Icon, label: lbl, value }: { icon: React.ElementType; 
       <span className="text-xs text-muted-foreground">{lbl}</span>
       <span className="font-semibold text-sm">{value}</span>
     </div>
+  );
+}
+
+// ─── Related Properties ─────────────────────────────────────────────────────────
+
+function RelatedProperties({ listing }: { listing: Listing }) {
+  const advertiserId = listing.Advertiser?.id ?? listing.advertiser_id;
+  const { data } = useListings({
+    advertiserId: String(advertiserId),
+    listingStatus: 'approved',
+    limit: 5,
+  });
+  const related = (data?.data ?? []).filter((item) => item.id !== listing.id).slice(0, 4);
+
+  if (related.length === 0) return null;
+
+  const brokerName = [listing.Advertiser?.firstName, listing.Advertiser?.lastName].filter(Boolean).join(' ');
+
+  return (
+    <section className="mt-12">
+      <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-4">
+        More from {brokerName || 'this broker'}
+      </h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {related.map((item) => (
+          <ListingCard key={item.id} listing={item} />
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -291,6 +321,17 @@ function PropertyDetail({ listing }: { listing: Listing }) {
             {/* Contact — desktop sidebar card */}
             <div className="hidden lg:block border border-border rounded-2xl p-5 space-y-3">
               <p className="font-semibold text-sm">Interested in this property?</p>
+              {listing.Advertiser && (
+                <Link
+                  href={`/broker/${listing.Advertiser.id}`}
+                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <User className="w-4 h-4 shrink-0" />
+                  <span className="truncate">
+                    Listed by {listing.Advertiser.firstName} {listing.Advertiser.lastName}
+                  </span>
+                </Link>
+              )}
               <a
                 href={`tel:${listing.contact_phone}`}
                 className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-border bg-primary text-white hover:bg-secondary transition-colors text-sm font-medium"
@@ -309,6 +350,9 @@ function PropertyDetail({ listing }: { listing: Listing }) {
           </div>
         </div>
       </div>
+
+      {/* Related properties */}
+      <RelatedProperties listing={listing} />
 
       {/* Contact — mobile fixed bottom bar */}
       <div
